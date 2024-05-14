@@ -13,39 +13,45 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="reflection">
-      <UniqueIdentifier>{d0d70dd8-0b6b-4fc0-969d-f93346ff3763}</UniqueIdentifier>
+    <Filter Include="hint">
+      <UniqueIdentifier>{2c1eb011-c04a-43f3-8120-5ccd635442f5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="typename.cpp">
+    <ClInclude Include="Type.h">
       <Filter>헤더 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="ReflTest.cpp">
-      <Filter>reflection</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
+    </ClInclude>
     <ClInclude Include="hash.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="typename.h">
+    <ClInclude Include="TypeMacro.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="xxhash.h">
+    <ClInclude Include="Property.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="xxhash64.h">
+    <ClInclude Include="Method.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ReflTest.generated.h">
-      <Filter>reflection</Filter>
+    <ClInclude Include="Reflection.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="ReflTest.h">
-      <Filter>reflection</Filter>
+    <ClInclude Include="PropertyMacro.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="MethodMacro.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonMacro.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Type.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

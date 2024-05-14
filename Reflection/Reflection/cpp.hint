@@ -1,0 +1,9 @@
+//
+// https://go.microsoft.com/fwlink/?linkid=865984
+//
+
+#define GENERATED_REFLECT(THIS_TYPE)
+
+#define REGIST_FUNCTION(FUNCTION_NAME)
+
+#define REGIST_PROPERTY(PROPERTY_NAME)
