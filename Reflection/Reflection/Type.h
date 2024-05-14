@@ -13,7 +13,7 @@ namespace flt
 		class Property;
 
 		template <typename T>
-		concept HasSuper = requires	{typename T::Super; } && !std::same_as<typename T::Super, void>;
+		concept HasSuper = requires	{ typename T::Super; } && !std::same_as<typename T::Super, void>;
 
 		template <typename T>
 		concept HasType = requires { T::GetType(); };
@@ -45,7 +45,7 @@ namespace flt
 			{
 				if constexpr (HasSuper<T>)
 				{
-					_super = &T::Super::GetType();
+					_super = T::Super::InitType();
 				}
 
 				_hash = xxh64::hash(_rawTypeName.data(), _rawTypeName.length(), 0);

@@ -40,12 +40,13 @@ int main()
 	ReflTest test;
 	auto type = test.GetType();
 
-	std::cout << type->_typeName << std::endl;
-	std::cout << type->_rawTypeName << std::endl;
-	std::cout << type->_hash << std::endl;
+	//static_assert(std::is_same_v<ReflTest, ReflTest::ThisType>);
+	//static_assert(std::is_same_v<Parent, ReflTest::Super>);
 
-	//test._registProPerty__LINE__testInt
-	
+	std::cout << "type    : " << type->_typeName << std::endl;
+	std::cout << "super   : " << type->_super->_typeName << std::endl;
+	std::cout << "rawType : " << type->_rawTypeName << std::endl;
+	std::cout << "hash    : " << type->_hash << std::endl;
 
 	return 0;
 }

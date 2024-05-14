@@ -2,8 +2,13 @@
 #include "../Reflection/Type.h"
 #include "ReflTest.generated.h"
 
+class Parent
+{
+	GENERATED_REFLECT(Parent)
+};
+
 CLASS()
-class ReflTest
+class ReflTest : public Parent
 {
 	GENERATED_REFLECT(ReflTest)
 public:
@@ -20,6 +25,8 @@ private:
 public:
 	REGIST_PROPERTY(testInt)
 	int testInt;
+
+	int m_data;
 
 private:
 	REGIST_PROPERTY(testFloat)

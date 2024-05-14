@@ -2,14 +2,14 @@
 #include "Type.h"
 
 #define GENERATED_REFLECT(THIS_TYPE)\
-private:\
+public:\
 	template<typename T, typename U>\
 	friend struct flt::refl::SuperType;\
 \
 	template<typename T>\
 	friend struct flt::refl::TypeBuilder;\
 	\
-	using Super = flt::refl::SuperType_t<THIS_TYPE>;\
+	using Super = flt::refl::SuperType<THIS_TYPE>::Type;\
 	using ThisType = THIS_TYPE;\
 \
 public:\
