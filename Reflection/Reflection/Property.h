@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Type.h"
 
 namespace flt
 {
@@ -6,7 +7,17 @@ namespace flt
 	{
 		class Property
 		{
+		public:
 
+		private:
+		};
+
+		template<typename T>
+		class PropertyRegister
+		{
+		public:
+
+		private:
 		};
 	} // namespace refl
 } // namespace flt

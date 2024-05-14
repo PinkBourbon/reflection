@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <string_view>
 #include <type_traits>
+#include <vector>
 #include "hash.h"
 
 namespace flt
@@ -84,7 +85,8 @@ namespace flt
 			explicit Type(const TypeBuilder<T>& builder);
 
 		private:
-
+			std::vector<Method*> _methods;
+			std::vector<Property*> _properties;
 
 		public:
 			std::string_view _typeName;
@@ -100,7 +102,19 @@ namespace flt
 			_hash(builder._hash), 
 			_super(builder._super)
 		{
+			if constexpr (HasSuper<T>)
+			{
+				// TODO : Add super methods and properties
+				for(auto& method : _super->_methods)
+				{
+					_methods.push_back(method);
+				}
 
+				for(auto& property : _super->_properties)
+				{
+					_properties.push_back(property);
+				}
+			}
 		}
 
 	} // namespace refl

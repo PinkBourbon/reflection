@@ -32,11 +32,21 @@
 //	return 0;
 //}
 
+#define STR(A) #A
+#define STR2(A) STR(A)
+#define TEST_STR test_str
+
+constexpr auto g_t = STR(__LINE__);
+constexpr auto g_t2 = STR2(__LINE__);
+constexpr auto g_t3 = STR(TEST_STR);
+constexpr auto g_t4 = STR2(TEST_STR);
+
 #include <iostream>
 #include "ReflTest.h"
 
 int main()
 {
+
 	ReflTest test;
 	auto type = test.GetType();
 
