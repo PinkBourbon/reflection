@@ -13,11 +13,40 @@ namespace flt
 		class Method;
 		class Property;
 
-		template <typename T>
-		concept HasSuper = requires	{ typename T::Super; } && !std::same_as<typename T::Super, void>;
+		//template<typename T>
+		//struct TypeTester
+		//{
+		//	constexpr static bool hasSuper = requires { typename T::Super; } && !std::same_as<typename T::Super, void>;
+		//	constexpr static bool hasType = requires { T::InitType(); };
+		//};
+
+		namespace impl
+		{
+			template <typename T>
+			concept HasSuperImpl = requires { typename T::Super; };// && !std::same_as<typename T::Super, void>;
+
+			template <typename T>
+			concept ReflectTypeImpl = requires { T::InitType(); };
+		}
+
+		template<typename T>
+		struct Tester
+		{
+			constexpr static inline bool hasSuper = impl::HasSuperImpl<T>;
+			constexpr static inline bool hasType = impl::ReflectTypeImpl<T>;
+		};
 
 		template <typename T>
-		concept HasType = requires { T::GetType(); };
+		concept HasSuper = requires { typename T::Super; } && !std::same_as<typename T::Super, void>;
+
+		template <typename T>
+		concept ReflectType = requires { T::InitType(); };
+
+		template <typename T>
+		concept ReflectTypePointer = std::is_pointer_v<T> && ReflectType<std::remove_pointer_t<T>>;
+
+		template <typename T>
+		concept NotReflectType = !ReflectType<T> && !ReflectType<std::remove_pointer_t<T>>;
 
 		template<typename T, typename U = void>
 		struct SuperType
@@ -39,8 +68,8 @@ namespace flt
 		struct TypeBuilder
 		{
 			constexpr TypeBuilder(std::string_view typeName) :
-				_typeName(typeName), 
-				_rawTypeName(GetRawTypaName()), 
+				_typeName(typeName),
+				_rawTypeName(GetRawTypaName()),
 				_hash(),
 				_super(nullptr)
 			{
@@ -84,6 +113,35 @@ namespace flt
 			template <typename T>
 			explicit Type(const TypeBuilder<T>& builder);
 
+			template <ReflectType T> //requires HasType<T>
+			static constexpr Type* GetType()
+			{
+				return T::InitType();
+			}
+
+			template<ReflectTypePointer T> //requires std::is_pointer_v<T> && HasType<std::remove_pointer_t<T>>
+			static constexpr Type* GetType()
+			{
+				return std::remove_pointer_t<T>::InitType();
+			}
+
+			template <typename T> requires (!ReflectType<T>) && (!ReflectType<std::remove_pointer_t<T>>)
+				static constexpr Type* GetType()
+			{
+				static Type type{ TypeBuilder<T>{"unknown"} };
+				return &type;
+			}
+
+			void AddProperty(Property* property)
+			{
+				_properties.push_back(property);
+			}
+
+			void AddMethod(Method* method)
+			{
+				_methods.push_back(method);
+			}
+
 		private:
 			std::vector<Method*> _methods;
 			std::vector<Property*> _properties;
@@ -97,20 +155,20 @@ namespace flt
 
 		template <typename T>
 		flt::refl::Type::Type(const TypeBuilder<T>& builder) :
-			_typeName(builder._typeName), 
-			_rawTypeName(builder._rawTypeName), 
-			_hash(builder._hash), 
+			_typeName(builder._typeName),
+			_rawTypeName(builder._rawTypeName),
+			_hash(builder._hash),
 			_super(builder._super)
 		{
 			if constexpr (HasSuper<T>)
 			{
 				// TODO : Add super methods and properties
-				for(auto& method : _super->_methods)
+				for (auto& method : _super->_methods)
 				{
 					_methods.push_back(method);
 				}
 
-				for(auto& property : _super->_properties)
+				for (auto& property : _super->_properties)
 				{
 					_properties.push_back(property);
 				}

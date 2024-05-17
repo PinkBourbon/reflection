@@ -12,6 +12,6 @@ inline static struct PROPERTY_STRUCT_NAME(LINE, PROPERTY_NAME)\
 {\
 	PROPERTY_STRUCT_NAME(LINE, PROPERTY_NAME)()\
 	{\
-		/*Property::RegistProperty(#PROPERTY_NAME);\*/\
+		static flt::refl::PropertyRegister<ThisType, decltype(PROPERTY_NAME), decltype(&ThisType::PROPERTY_NAME), &ThisType::PROPERTY_NAME> propertyRegister{#PROPERTY_NAME, InitType()};\
 	}\
 }PROPERTY_STRUCT_INSTANCE_NAME(LINE, PROPERTY_NAME);

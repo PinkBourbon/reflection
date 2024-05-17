@@ -46,9 +46,27 @@ constexpr auto g_t4 = STR2(TEST_STR);
 
 int main()
 {
-
 	ReflTest test;
 	auto type = test.GetType();
+
+	std::cout << std::boolalpha;
+
+	constexpr flt::refl::Tester<ReflTest> t;
+
+	constexpr auto m = t.hasSuper;
+
+	std::cout << m << std::endl;
+
+	std::cout << flt::refl::ReflectType<ReflTest> << std::endl;
+	std::cout << flt::refl::ReflectType<Parent> << std::endl;
+	std::cout << flt::refl::ReflectType<ReflMember> << std::endl;
+	std::cout << flt::refl::ReflectType<float> << std::endl;
+
+	auto type2 = flt::refl::Type::GetType<ReflTest>();
+	auto type3 = flt::refl::Type::GetType<Parent>();
+	auto type4 = flt::refl::Type::GetType<ReflMember>();
+	auto type5 = flt::refl::Type::GetType<float>();
+
 
 	//static_assert(std::is_same_v<ReflTest, ReflTest::ThisType>);
 	//static_assert(std::is_same_v<Parent, ReflTest::Super>);

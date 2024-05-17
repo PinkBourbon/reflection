@@ -2,7 +2,6 @@
 
 #include "CommonMacro.h"
 #include "Method.h"
-#define REGIST_METHOD(METHOD_NAME)
 
 
 #define METHOD_STRUCT_NAME(LINE, METHOD_NAME) Concatenation(RegistMethod, _, LINE, _, METHOD_NAME)

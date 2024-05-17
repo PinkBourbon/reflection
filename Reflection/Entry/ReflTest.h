@@ -7,8 +7,13 @@ class Parent
 	GENERATED_REFLECT(Parent)
 };
 
+class ReflMember
+{
+	GENERATED_REFLECT(ReflMember)
+};
+
 CLASS()
-class ReflTest : public Parent
+class ReflTest : public Parent//, public Parent2
 {
 	GENERATED_REFLECT(ReflTest)
 public:
@@ -26,7 +31,14 @@ public:
 	REGIST_PROPERTY(testInt)
 	int testInt;
 
-	int m_data;
+	REGIST_PROPERTY(pData)
+	int* pData;
+
+	REGIST_PROPERTY(reflMember)
+	ReflMember reflMember;
+
+	REGIST_PROPERTY(pReflMember)
+	ReflMember* pReflMember;
 
 private:
 	REGIST_PROPERTY(testFloat)
