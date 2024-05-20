@@ -62,11 +62,27 @@ int main()
 	std::cout << flt::refl::ReflectType<ReflMember> << std::endl;
 	std::cout << flt::refl::ReflectType<float> << std::endl;
 
-	auto type2 = flt::refl::Type::GetType<ReflTest>();
-	auto type3 = flt::refl::Type::GetType<Parent>();
-	auto type4 = flt::refl::Type::GetType<ReflMember>();
-	auto type5 = flt::refl::Type::GetType<float>();
+	flt::refl::Type* type2 = flt::refl::Type::GetType<ReflTest>();
+	flt::refl::Type* type3 = flt::refl::Type::GetType<Parent>();
+	flt::refl::Type* type4 = flt::refl::Type::GetType<ReflMember>();
+	flt::refl::Type* type5 = flt::refl::Type::GetType<float>();
 
+	flt::refl::Property* reflProp = type->GetProperty("testInt");
+
+	std::cout << "refl TestInt : " << test.testInt << std::endl;
+
+	int* val = reflProp->Get<int>(&test);
+
+	std::cout << *val << std::endl;
+	
+
+	reflProp->Set(&test, 123);
+
+	std::cout << "refl TestInt : " << test.testInt << std::endl;
+
+	val = reflProp->Get<int>(&test);
+
+	std::cout << *val << std::endl;
 
 	//static_assert(std::is_same_v<ReflTest, ReflTest::ThisType>);
 	//static_assert(std::is_same_v<Parent, ReflTest::Super>);

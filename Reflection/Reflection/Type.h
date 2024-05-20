@@ -110,9 +110,6 @@ namespace flt
 		class Type
 		{
 		public:
-			template <typename T>
-			explicit Type(const TypeBuilder<T>& builder);
-
 			template <ReflectType T> //requires HasType<T>
 			static constexpr Type* GetType()
 			{
@@ -132,6 +129,10 @@ namespace flt
 				return &type;
 			}
 
+		public:
+			template <typename T>
+			explicit Type(const TypeBuilder<T>& builder);
+
 			void AddProperty(Property* property)
 			{
 				_properties.push_back(property);
@@ -141,6 +142,14 @@ namespace flt
 			{
 				_methods.push_back(method);
 			}
+
+			bool operator==(const Type& other) const
+			{
+				return _hash == other._hash;
+			}
+
+			Property* GetProperty(std::string_view name) const;
+
 
 		private:
 			std::vector<Method*> _methods;
