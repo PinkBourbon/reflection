@@ -13,6 +13,6 @@ inline static struct METHOD_STRUCT_NAME(LINE, PROPERTY_NAME)\
 {\
 	METHOD_STRUCT_NAME(LINE, PROPERTY_NAME)()\
 	{\
-		/*Property::RegistProperty(#PROPERTY_NAME);\*/\
+		static flt::refl::MethodRegister propertyRegister{&PROPERTY_NAME};\
 	}\
 }METHOD_STRUCT_INSTANCE_NAME(LINE, PROPERTY_NAME);

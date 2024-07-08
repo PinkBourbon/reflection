@@ -14,3 +14,8 @@ flt::refl::Property* flt::refl::Type::GetProperty(std::string_view name) const
 
 	return nullptr;
 }
+
+std::vector<flt::refl::Property*> flt::refl::Type::GetProperties() const
+{
+	return _properties;
+}

@@ -149,6 +149,7 @@ namespace flt
 			}
 
 			Property* GetProperty(std::string_view name) const;
+			std::vector<Property*> GetProperties() const;
 
 
 		private:

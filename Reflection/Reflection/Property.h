@@ -76,9 +76,20 @@ namespace flt
 			}
 
 			template<typename T>
-			void Set(void* owner, T value)
+			bool Set(void* owner, T value)
 			{
+				if(type != Type::GetType<T>())
+				{
+					return false;
+				}
+
 				static_cast<IPropertyHandler<T>*>(handler)->Set(owner, value);
+				return true;
+			}
+
+			std::string_view Name() const
+			{
+				return name;
 			}
 
 		private:

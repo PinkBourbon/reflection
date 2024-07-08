@@ -129,11 +129,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Base.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ReflTest.cpp" />
     <ClCompile Include="typename.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Base.h" />
     <ClInclude Include="hash.h" />
     <ClInclude Include="ReflTest.generated.h" />
     <ClInclude Include="ReflTest.h" />

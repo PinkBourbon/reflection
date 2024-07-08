@@ -27,6 +27,9 @@
     <ClCompile Include="ReflTest.cpp">
       <Filter>reflection</Filter>
     </ClCompile>
+    <ClCompile Include="Base.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hash.h">
@@ -46,6 +49,9 @@
     </ClInclude>
     <ClInclude Include="ReflTest.h">
       <Filter>reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="Base.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
