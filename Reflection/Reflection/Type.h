@@ -109,6 +109,7 @@ namespace flt
 
 		class Type
 		{
+#pragma region STATIC
 		public:
 			template <ReflectType T> //requires HasType<T>
 			static constexpr Type* GetType()
@@ -128,7 +129,7 @@ namespace flt
 				static Type type{ TypeBuilder<T>{"unknown"} };
 				return &type;
 			}
-
+#pragma endregion
 		public:
 			template <typename T>
 			explicit Type(const TypeBuilder<T>& builder);
@@ -150,6 +151,9 @@ namespace flt
 
 			Property* GetProperty(std::string_view name) const;
 			std::vector<Property*> GetProperties() const;
+
+			Method* GetMethod(std::string_view name) const;
+			std::vector<Method*> GetMethods() const;
 
 
 		private:

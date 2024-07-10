@@ -7,15 +7,16 @@ class Base
 	GENERATED_REFLECT(Base)
 
 public:
+
 	REGIST_PROPERTY(baseInt)
-	int baseInt;
+	int baseInt = 10;
 
 	REGIST_METHOD(Func)
-	void Func();
+	void Func(int i);
 
 private:
 	REGIST_PROPERTY(_baseFloat)
-	float _baseFloat;
+	float _baseFloat = 10.1f;
 };
 
 class Derived : public Base
@@ -24,11 +25,11 @@ class Derived : public Base
 
 public:
 	REGIST_PROPERTY(derivedInt)
-	int derivedInt;
+	int derivedInt = 20;
 
-	float derivedFloat;
+	float derivedFloat = 20.2f;
 private:
 
 	REGIST_PROPERTY(_derivedInt)
-	int _derivedInt;
+	int _derivedInt = 22;
 };

@@ -1,6 +1,6 @@
 ﻿#include "Base.h"
 
-void Base::Func()
+void Base::Func(int i)
 {
-	std::cout << "Base Func\n";
+	std::cout << "Base Func" << i << std::endl;
 }

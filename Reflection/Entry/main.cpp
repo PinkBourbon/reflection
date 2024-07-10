@@ -26,7 +26,24 @@ int main()
 	}
 	std::cout << "\n\n";
 
+	std::vector<Method*> baseMethods = baseType->GetMethods();
+	std::vector<Method*> derivedMethods = derivedType->GetMethods();
 
+	baseMethods[0].Invoke<Base, void>(&Base(), 1);
+
+	std::cout << "Base Methods | ";
+	for(auto method : baseMethods)
+	{
+		std::cout << method->Name() << " | ";
+	}
+	std::cout << "\n";
+
+	std::cout << "Derived Methods : | ";
+	for(auto method : derivedMethods)
+	{
+		std::cout << method->Name() << " | ";
+	}
+	std::cout << "\n\n";
 
 	for (int i = 0; i < 3; ++i)
 	{
