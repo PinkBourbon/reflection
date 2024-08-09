@@ -6,7 +6,6 @@
 
 namespace flt
 {
-
 	namespace refl
 	{
 		class Type;

@@ -1,4 +1,5 @@
-#include "QtWidgetsApplication1.h"
+﻿#include "QtWidgetsApplication1.h"
+
 
 QtWidgetsApplication1::QtWidgetsApplication1(QWidget *parent)
     : QMainWindow(parent)

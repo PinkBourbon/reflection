@@ -16,42 +16,51 @@
     <Filter Include="hint">
       <UniqueIdentifier>{2c1eb011-c04a-43f3-8120-5ccd635442f5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Reflection">
+      <UniqueIdentifier>{80c271d1-95ac-473a-bfcd-c454ec7fe139}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VisualScript">
+      <UniqueIdentifier>{dceb8726-fbcc-4ae2-a92c-bce7e0576deb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Type.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="hash.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="TypeMacro.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Property.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Method.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Reflection.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="PropertyMacro.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="MethodMacro.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="CommonMacro.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Type.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
+    <ClInclude Include="Method.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="MethodMacro.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="Property.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyMacro.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="Reflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="Type.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeMacro.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualScriptNode.h">
+      <Filter>VisualScript</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Type.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

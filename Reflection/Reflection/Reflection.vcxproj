@@ -28,6 +28,7 @@
     <ClInclude Include="Reflection.h" />
     <ClInclude Include="Type.h" />
     <ClInclude Include="TypeMacro.h" />
+    <ClInclude Include="VisualScriptNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Type.cpp" />
