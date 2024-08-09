@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <iostream>
+#include "TypeMacro.h"
 
 namespace flt
 {
@@ -14,6 +15,8 @@ namespace flt
 		template<typename T, typename ReturnType, typename... Args>
 		class Callable : public CallableBase
 		{
+			GENERATED_REFLECT(Callable)
+
 			using FunctionType = ReturnType(T::*)(Args...);
 		public:
 			Callable(FunctionType ptr)
@@ -23,7 +26,7 @@ namespace flt
 
 			ReturnType Invoke(T* caller, Args... args) const
 			{
-				return (static_cast<const T*>(caller)->*_ptr)(std::forward<Args>(args)...);
+				return (caller->*_ptr)(std::forward<Args>(args)...);
 			}
 
 		private:
@@ -48,6 +51,12 @@ namespace flt
 			std::string_view Name() const
 			{
 				return _name;
+			}
+
+			template<typename ReturnType, typename T, typename... Args>
+			ReturnType Invoke(T* caller, Args... args) const
+			{
+				return static_cast<const Callable<T, ReturnType, Args...>&>(_callable).Invoke(caller, std::forward<Args>(args)...);
 			}
 
 		private:

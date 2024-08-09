@@ -28,8 +28,9 @@ int main()
 
 	std::vector<Method*> baseMethods = baseType->GetMethods();
 	std::vector<Method*> derivedMethods = derivedType->GetMethods();
+	Base tBase;
 
-	baseMethods[0].Invoke<Base, void>(&Base(), 1);
+	baseMethods[0]->Invoke<void>(&tBase, 1);
 
 	std::cout << "Base Methods | ";
 	for(auto method : baseMethods)

@@ -54,6 +54,9 @@
     <ClInclude Include="VisualScriptNode.h">
       <Filter>VisualScript</Filter>
     </ClInclude>
+    <ClInclude Include="TypeName.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
