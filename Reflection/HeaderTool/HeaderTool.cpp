@@ -111,13 +111,50 @@ enum CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, CXClientData
 
 	if(kind == CXCursor_MacroExpansion)
 	{
-		CXSourceLocation location = clang_getCursorLocation(cursor);
-		CXFile file;
-		unsigned int line, column, offset;
-		clang_getSpellingLocation(location, &file, &line, &column, &offset);
-		CXString filename = clang_getFileName(file);
-		printf("File: %s, Line: %u, Column: %u\n", clang_getCString(filename), line, column);
-		clang_disposeString(filename);
+		CXString name = clang_getCursorSpelling(cursor);
+		printf("매크로 이름: %s\n", clang_getCString(name));
+
+		CXToken* tokens;
+		unsigned int num_tokens;
+		CXTranslationUnit tu = clang_Cursor_getTranslationUnit(cursor);
+		CXSourceRange range = clang_getCursorExtent(cursor);
+		clang_tokenize(tu, range, &tokens, &num_tokens);
+
+		if (num_tokens > 1)
+		{
+			CXToken second_token = tokens[1];
+			CXTokenKind token_kind = clang_getTokenKind(second_token);
+
+			if (token_kind == CXToken_Punctuation) 
+			{
+				CXString token_spelling = clang_getTokenSpelling(tu, second_token);
+				const char* token_str = clang_getCString(token_spelling);
+
+				if (strcmp(token_str, "(") == 0) 
+				{
+					printf("  함수형 매크로입니다.\n");
+					printf("  매개변수: ");
+
+					for (unsigned int i = 2; i < num_tokens; i++) 
+					{
+						CXToken token = tokens[i];
+						CXString token_spelling = clang_getTokenSpelling(tu, token);
+						const char* token_str = clang_getCString(token_spelling);
+
+						if (strcmp(token_str, ")") == 0) break;
+						if (strcmp(token_str, ",") != 0) 
+						{
+							printf("%s ", token_str);
+						}
+
+						clang_disposeString(token_spelling);
+					}
+					printf("\n");
+				}
+
+				clang_disposeString(token_spelling);
+			}
+		}
 	}
 
 	printf("--------------------------------\n");
@@ -132,8 +169,10 @@ int main()
 	const char* filename = "example.h";  // 분석할 헤더 파일 이름
 
 	unsigned int options = CXTranslationUnit_DetailedPreprocessingRecord
+		| CXTranslationUnit_Incomplete
 		| CXTranslationUnit_SkipFunctionBodies
-		| CXTranslationUnit_IncludeAttributedTypes
+		| CXTranslationUnit_VisitImplicitAttributes
+		| CXTranslationUnit_SingleFileParse
 		| CXTranslationUnit_VisitImplicitAttributes;
 
 	// 번역 단위 생성
