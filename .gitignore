@@ -411,3 +411,5 @@ Lib/
 
 # Build
 Build/
+*.dll
+*.lib
