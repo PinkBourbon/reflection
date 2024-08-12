@@ -1,5 +1,10 @@
-﻿#include <iostream>
+﻿#define _CRT_SECURE_NO_WARNINGS
+
+#include <iostream>
 #include "clang-c/Index.h"
+
+/// 테스트용 include
+#include <windows.h>
 
 #pragma comment(lib, "libclang.lib")
 
@@ -163,8 +168,30 @@ enum CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, CXClientData
 	return CXChildVisit_Recurse;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+	AllocConsole();
+	HWND _consoleHwnd = GetConsoleWindow();
+	ShowWindow(_consoleHwnd, SW_SHOW);
+
+	FILE* console = freopen("CONOUT$", "w", stdout);
+	std::cout.clear();
+	ShowWindow(_consoleHwnd, SW_SHOW);
+
+	if(argc < 2)
+	{
+		printf("Usage: HeaderTool.exe <header file>\n");
+		return 1;
+	}
+
+	std::string path = argv[1];
+	std::string generatedPath = path.substr(0, path.find_last_of('.')) + "_generated.h";
+
+	std::cout << path << std::endl;
+	std::cout << generatedPath << std::endl;
+
+	return 0;
+
 	CXIndex index = clang_createIndex(0, 0);
 	const char* filename = "example.h";  // 분석할 헤더 파일 이름
 
