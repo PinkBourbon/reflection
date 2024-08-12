@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "AddIncludeGeneratedFile.h"
-#include "HeaderAnalyzer.h"
+#include "CodeGenerator.h"
 
 /// 테스트용 include
 #include <windows.h>
@@ -124,15 +124,12 @@ int main(int argc, char* argv[])
 	}
 
 	std::string path = argv[1];
-
-	std::string generatedPath = path.substr(0, path.find_last_of('.')) + "_generated.h";
-
-	AddIncludeGeneratedFile(path);
-
-	HeaderAnalyzer analyzer(path);
-
-	std::cout << path << std::endl;
-	std::cout << generatedPath << std::endl;
+	CodeGenerator generator;
+	
+	if (generator.Generate(path))
+	{
+		AddIncludeGeneratedFile(path);
+	}
 
 	return 0;
 }
