@@ -17,29 +17,6 @@ unsigned int GetLineNumber(CXCursor cursor)
 // 현재 반드시 매크로가 먼저 모두 검색된다는 가정하에 작성되었습니다.
 CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data)
 {
-
-	{
-		CXCursorKind cursorKind = clang_getCursorKind(cursor);
-		CXType cursorType = clang_getCursorType(cursor);
-		std::string typeString = clang_getCString(clang_getTypeSpelling(cursorType));
-
-		CXFile file;
-		unsigned int line, column;
-		CXSourceLocation cursorLocation = clang_getCursorLocation(cursor);
-		clang_getFileLocation(cursorLocation, &file, &line, &column, NULL);
-
-		if (clang_Location_isFromMainFile(cursorLocation))
-		{
-			switch (cursorKind)
-			{
-				case CXCursor_ClassDecl:
-				{
-					std::cout << typeString << std::endl;
-				}
-			}
-		}
-	}
-
 	HeaderAnalyzer* thisPtr = static_cast<HeaderAnalyzer*>(client_data);
 
 	CXString name = clang_getCursorSpelling(cursor);
@@ -50,15 +27,6 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 
 	const char* parentName_cstr = clang_getCString(clang_getCursorSpelling(parent));
 	const char* parentKindName = clang_getCString(clang_getCursorKindSpelling(clang_getCursorKind(parent)));
-
-	std::string typeString = clang_getCString(clang_getTypeSpelling(clang_getCursorType(cursor)));
-
-
-	std::string tempName = name_cstr;
-	if(tempName.find("Example") != tempName.npos)
-	{
-		int i = 0;
-	}
 
 	switch (kind)
 	{
