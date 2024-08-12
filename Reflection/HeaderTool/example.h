@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <iostream>
 
 namespace refl
 {
@@ -47,6 +48,3 @@ private:
 	REFL_PROP
 	Tester<int> _tester;
 };
-
-
-
