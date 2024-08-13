@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -25,6 +26,7 @@ namespace FloaterVSIX
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(FloaterVSIXPackage.PackageGuidString)]
+    [ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     public sealed class FloaterVSIXPackage : AsyncPackage
     {
         /// <summary>
@@ -46,6 +48,10 @@ namespace FloaterVSIX
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+            HeaderFileProcesser headerFileProcesser = new HeaderFileProcesser();
+            headerFileProcesser.Initialize(this);
+
         }
 
         #endregion

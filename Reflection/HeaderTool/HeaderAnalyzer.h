@@ -19,8 +19,10 @@ private:
 
 	struct MemberData
 	{
-		std::string type;
 		std::string name;
+		std::string type;
+		unsigned int line;
+		bool isStatic;
 	};
 
 public:

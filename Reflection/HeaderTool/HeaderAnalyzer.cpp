@@ -93,29 +93,31 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 		case CXCursor_ClassDecl:
 		{
 			std::cout << "클래스: " << name_cstr << " (라인: " << line << ")" << std::endl;
-			std::vector<std::pair<std::string, unsigned int>> bases;
+			std::vector<std::tuple<std::string, unsigned int, bool>> bases;
 			clang_visitChildren(
-				cursor
-				, [](CXCursor c, CXCursor parent, CXClientData client_data)
+				cursor,
+				[](CXCursor c, CXCursor parent, CXClientData client_data)
 				{
 					if (clang_getCursorKind(c) == CXCursor_CXXBaseSpecifier)
 					{
-						CXString baseSpelling = clang_getCursorSpelling(clang_getCursorReferenced(c));
+						CXType baseType = clang_getCursorType(clang_getCursorReferenced(c));
+						CXString baseTypeSpelling = clang_getTypeSpelling(baseType);
 						unsigned int baseLine = GetLineNumber(c);
-						static_cast<std::vector<std::pair<std::string, unsigned int>>*>(client_data)->push_back(
-							{ clang_getCString(baseSpelling), baseLine });
-						clang_disposeString(baseSpelling);
+						bool isVirtual = clang_isVirtualBase(c);
+						static_cast<std::vector<std::tuple<std::string, unsigned int, bool>>*>(client_data)->push_back(
+							std::make_tuple(clang_getCString(baseTypeSpelling), baseLine, isVirtual));
+						clang_disposeString(baseTypeSpelling);
 					}
 					return CXChildVisit_Continue;
-				}
-				, &bases);
-
+				},
+				&bases);
 			if (!bases.empty())
 			{
 				std::cout << "  상속: ";
 				for (size_t i = 0; i < bases.size(); ++i) {
 					if (i > 0) std::cout << ", ";
-					std::cout << bases[i].first << " (라인: " << bases[i].second << ")";
+					std::cout << std::get<0>(bases[i]) << " (라인: " << std::get<1>(bases[i]) << ", "
+						<< (std::get<2>(bases[i]) ? "가상" : "일반") << ")";
 				}
 				std::cout << std::endl;
 			}

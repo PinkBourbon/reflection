@@ -7,13 +7,14 @@ namespace refl
 	using prop = void;
 }
 
-//#define REFL_CLASS()
-//#define REFL_CLASS(X)
-//
-//#define REFL_FUNC
-//#define REFL_PROP
-//
-//#define NOT_AUTO
+#define REFL_CLASS()
+#define REFL_CLASS(X)
+
+#define REFL_FUNC
+#define REFL_PROP
+
+#define NOT_AUTO
+#define REFL_BODY
 
 template<typename T>
 class Tester
@@ -22,7 +23,7 @@ class Tester
 
 
 //REFL_CLASS()
-//REFL_CLASS(NOT_AUTO)
+REFL_CLASS(NOT_AUTO)
 class Example : public Tester<int>, public Tester<float>, virtual public Tester<double>
 {
 public:
