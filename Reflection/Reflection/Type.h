@@ -143,6 +143,11 @@ namespace flt
 				_methods.push_back(method);
 			}
 
+			void AddParents(Type* parent)
+			{
+				_parents.push_back(parent);
+			}
+
 			bool operator==(const Type& other) const
 			{
 				return _hash == other._hash;
@@ -154,8 +159,8 @@ namespace flt
 			Method* GetMethod(std::string_view name) const;
 			std::vector<Method*> GetMethods() const;
 
-
 		private:
+			std::vector<Type*> _parents;
 			std::vector<Method*> _methods;
 			std::vector<Property*> _properties;
 

@@ -27,6 +27,7 @@ namespace FloaterVSIX
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(FloaterVSIXPackage.PackageGuidString)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class FloaterVSIXPackage : AsyncPackage
     {
         /// <summary>
@@ -51,7 +52,6 @@ namespace FloaterVSIX
 
             HeaderFileProcesser headerFileProcesser = new HeaderFileProcesser();
             headerFileProcesser.Initialize(this);
-
         }
 
         #endregion

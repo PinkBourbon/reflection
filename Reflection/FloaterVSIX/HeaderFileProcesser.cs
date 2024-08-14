@@ -1,12 +1,17 @@
 ﻿using EnvDTE;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.TextManager.Interop;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
+
 
 namespace FloaterVSIX
 {
@@ -15,21 +20,49 @@ namespace FloaterVSIX
         //private IVsRunningDocumentTable _rdt;
         private RunningDocumentTable _rdt;
         private DTE _dte;
+
+        private IVsOutputWindowPane _outputPane;
+        private Guid _outputGuid;
+
         public void Initialize(Package package)
         {
-            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
-            _dte = (DTE)Package.GetGlobalService(typeof(DTE));
+            ThreadHelper.ThrowIfNotOnUIThread();
+            _dte = Package.GetGlobalService(typeof(DTE)) as DTE;
             _rdt = new RunningDocumentTable(package);
             _rdt.Advise(this);
+
+            IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+            _outputGuid = Guid.NewGuid();
+            outputWindow.CreatePane(ref _outputGuid, "HeaderFileProcesser", 1, 1);
+            outputWindow.GetPane(ref _outputGuid, out _outputPane);
+
+            PrintOutput("Initialized HeaderFileProcesser");
         }
 
-
+        private void PrintOutput(string message)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            _outputPane.OutputString(message + Environment.NewLine);
+        }
+        private bool RefreshDoc(RunningDocumentInfo docInfo)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            if (docInfo.DocData is IVsPersistDocData persistDocData)
+            {
+                int hr = persistDocData.ReloadDocData((uint)_VSRELOADDOCDATA.RDD_IgnoreNextFileChange);
+                if (ErrorHandler.Succeeded(hr))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public int OnAfterAttributeChange(uint docCookie, uint grfAttribs) { return Microsoft.VisualStudio.VSConstants.S_OK; }
         public int OnAfterAttributeChangeEx(uint docCookie, uint grfAttribs, IVsHierarchy pHierOld, uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew) { return Microsoft.VisualStudio.VSConstants.S_OK; }
         public int OnBeforeSave(uint docCookie) { return Microsoft.VisualStudio.VSConstants.S_OK; }
         public int OnAfterSave(uint docCookie)
         {
-            //var documentInfo = _rdt.GetDocumentInfo(docCookie, out uint flags, out uint readLocks, out uint editLocks, out string docPath, out IVsHierarchy hier, out uint itemId, out IntPtr docData);
+            ThreadHelper.ThrowIfNotOnUIThread();
             RunningDocumentInfo docInfo = _rdt.GetDocumentInfo(docCookie);
             if (docInfo.Moniker.EndsWith(".h"))
             {
@@ -40,23 +73,27 @@ namespace FloaterVSIX
                 {
                     FileName = exePath,
                     Arguments = docPath,
-                    UseShellExecute = true,
-                    RedirectStandardOutput = false,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
                     CreateNoWindow = true
                 };
 
                 System.Diagnostics.Process process = new System.Diagnostics.Process { StartInfo = startInfo };
                 process.Start();
                 process.WaitForExit();
-                if(process.ExitCode != 0)
+                if(process.ExitCode == 0)
                 {
-                    // Error
+                    if (RefreshDoc(docInfo))
+                    {
+                        string msg = "Success - Create Reflection Data Code : " + docInfo.Moniker;
+                        PrintOutput(msg);
+                        return Microsoft.VisualStudio.VSConstants.S_OK;
+                    }
                 }
-                else 
-                {
-                }
-                int i = 0;
-                // Do something
+
+                // Error
+                string errorMsg = "Error - Fail To Create Reflection Data Code : " + process.ExitCode.ToString();
+                PrintOutput(errorMsg);
             }
 
             return Microsoft.VisualStudio.VSConstants.S_OK;
