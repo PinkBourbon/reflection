@@ -1,14 +1,10 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
-using System.ComponentModel.Design;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
-using Task = System.Threading.Tasks.Task;
-using EnvDTE;
-using EnvDTE80;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using Task = System.Threading.Tasks.Task;
 
 namespace FloaterVSIX
 {
@@ -92,35 +88,40 @@ namespace FloaterVSIX
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+            package.ShowOptionPage(typeof(OptionsPage));
+            //OptionsPage options = (OptionsPage)package.GetDialogPage(typeof(OptionsPage));
+            //List<string> selectedProjects = options.SelectedProjects;
 
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            string title = "FloaterVSIXCommand";
+            //// 선택된 프로젝트에 대한 작업 수행
+            //foreach (string projectName in selectedProjects)
+            //{
+            //    // 프로젝트별 작업 수행
+            //    // 예: 출력 창에 프로젝트 이름 표시
+            //    IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+            //    if (outWindow != null)
+            //    {
+            //        Guid generalPaneGuid = VSConstants.OUTPUTWINDOW_ACTIVITYLOG_PaneGuid;
+            //        outWindow.GetPane(ref generalPaneGuid, out IVsOutputWindowPane pane);
+            //        if (pane != null)
+            //        {
+            //            pane.OutputString($"Selected project: {projectName}\n");
+            //        }
+            //    }
+            //}
 
-            // Show a message box to prove we were here
-            VsShellUtilities.ShowMessageBox(
-                this.package,
-                message,
-                title,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            //string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
+            //string title = "FloaterVSIXCommand";
+
+            //// Show a message box to prove we were here
+            //VsShellUtilities.ShowMessageBox(
+            //    this.package,
+            //    message,
+            //    title,
+            //    OLEMSGICON.OLEMSGICON_INFO,
+            //    OLEMSGBUTTON.OLEMSGBUTTON_OK,
+            //    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
 
-        private List<Project> GetCppProjects()
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-            DTE2 dte = (DTE2)Package.GetGlobalService(typeof(DTE));
-            List<Project> cppProjects = new List<Project>();
 
-            foreach (Project project in dte.Solution.Projects)
-            {
-                if (project.Kind == "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") // C++ 프로젝트 GUID
-                {
-                    cppProjects.Add(project);
-                }
-            }
-
-            return cppProjects;
-        }
     }
 }

@@ -48,7 +48,12 @@
   <ItemGroup>
     <Compile Include="FloaterVSIXCommand.cs" />
     <Compile Include="HeaderFileProcesser.cs" />
-    <Compile Include="OptionsPage.cs" />
+    <Compile Include="OptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectSelectionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FloaterVSIXPackage.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

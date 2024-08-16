@@ -28,6 +28,7 @@ namespace FloaterVSIX
     [Guid(FloaterVSIXPackage.PackageGuidString)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideOptionPage(typeof(OptionsPage), "FloaterVSIX", "General", 0, 0, true)]
     public sealed class FloaterVSIXPackage : AsyncPackage
     {
         /// <summary>
