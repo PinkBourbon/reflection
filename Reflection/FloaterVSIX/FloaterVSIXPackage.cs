@@ -33,7 +33,7 @@ namespace FloaterVSIX
         /// <summary>
         /// FloaterVSIXPackage GUID string.
         /// </summary>
-        public const string PackageGuidString = "9c5c9690-e1e8-4fa3-bfb7-b09b7083782b";
+        public const string PackageGuidString = "e52d5b02-bc20-42d7-8966-68aad0702dbd";
 
         #region Package Members
 
@@ -52,6 +52,7 @@ namespace FloaterVSIX
 
             HeaderFileProcesser headerFileProcesser = new HeaderFileProcesser();
             headerFileProcesser.Initialize(this);
+            await FloaterVSIXCommand.InitializeAsync(this);
         }
 
         #endregion
