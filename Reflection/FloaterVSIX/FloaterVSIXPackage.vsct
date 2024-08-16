@@ -38,9 +38,9 @@
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
     <Groups>
-      <Group guid="guidFloaterVSIXPackageCmdSet" id="MyMenuGroup" priority="0x0600">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS"/>
-      </Group>
+	  <Group guid="guidFloaterVSIXPackageCmdSet" id="MyMenuGroup" priority="0x0600">
+		<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS"/>
+	  </Group>
     </Groups>
 
     <!--Buttons section. -->
@@ -58,7 +58,7 @@
         <Parent guid="guidFloaterVSIXPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>Invoke FloaterVSIXCommand</ButtonText>
+          <ButtonText>FloaterVSIX</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -75,13 +75,13 @@
   </Commands>
 
   <Symbols>
+	  <GuidSymbol name ="guidSHLMainMenu" value ="{d309f791-903f-11d0-9efc-00a0c911004f}">
+		  <IDSymbol name="IDM_VS_MENU_EXTENSIONS" value="0x0091" />
+	  </GuidSymbol>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidFloaterVSIXPackage" value="{e52d5b02-bc20-42d7-8966-68aad0702dbd}" />
 
     <!-- This is the guid used to group the menu commands together -->
-	  <GuidSymbol name ="guidSHLMainMenu" value ="{d309f791-903f-11d0-9efc-00a0c911004f}">
-		  <IDSymbol name="IDM_VS_MENU_EXTENSIONS" value="0x0091" />
-	  </GuidSymbol>
 	  
     <GuidSymbol name="guidFloaterVSIXPackageCmdSet" value="{01673b99-89ae-4132-be8d-58f890423ffe}">
       <IDSymbol name="MyMenuGroup" value="0x1020" />

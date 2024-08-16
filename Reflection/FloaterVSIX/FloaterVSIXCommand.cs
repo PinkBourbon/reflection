@@ -6,6 +6,9 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Task = System.Threading.Tasks.Task;
+using EnvDTE;
+using EnvDTE80;
+using System.Collections.Generic;
 
 namespace FloaterVSIX
 {
@@ -89,6 +92,7 @@ namespace FloaterVSIX
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+
             string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
             string title = "FloaterVSIXCommand";
 
@@ -100,6 +104,23 @@ namespace FloaterVSIX
                 OLEMSGICON.OLEMSGICON_INFO,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK,
                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+        }
+
+        private List<Project> GetCppProjects()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            DTE2 dte = (DTE2)Package.GetGlobalService(typeof(DTE));
+            List<Project> cppProjects = new List<Project>();
+
+            foreach (Project project in dte.Solution.Projects)
+            {
+                if (project.Kind == "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") // C++ 프로젝트 GUID
+                {
+                    cppProjects.Add(project);
+                }
+            }
+
+            return cppProjects;
         }
     }
 }
