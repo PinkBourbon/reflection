@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Shell;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Windows.Forms;
 
 namespace FloaterVSIX
@@ -14,6 +15,11 @@ namespace FloaterVSIX
         private List<string> projects;
         private List<string> selectedProjects;
 
+        public event EventHandler ProjectSelectionChanged;
+
+
+        private System.Windows.Forms.CheckedListBox checkedListBoxProjects;
+        private System.Windows.Forms.Label labelInstructions;
         public List<string> Projects
         {
             get { return projects; }
@@ -34,8 +40,6 @@ namespace FloaterVSIX
             }
         }
 
-        public event EventHandler ProjectSelectionChanged;
-
         public ProjectSelectionControl()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -44,6 +48,7 @@ namespace FloaterVSIX
             projects = new List<string>();
             UpdateCppProjects();
             selectedProjects = new List<string>();
+            LoadSelectedProjects();
         }
 
         public bool IsCheckedProject(string projectName)
@@ -91,9 +96,6 @@ namespace FloaterVSIX
 
         }
 
-        private System.Windows.Forms.CheckedListBox checkedListBoxProjects;
-        private System.Windows.Forms.Label labelInstructions;
-
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -130,6 +132,7 @@ namespace FloaterVSIX
                 selectedProjects.Remove(project);
             }
 
+            SaveSelectedProjects();
             BeginInvoke(new Action(() =>
             {
                 ProjectSelectionChanged?.Invoke(this, EventArgs.Empty);
@@ -156,10 +159,22 @@ namespace FloaterVSIX
             string solutionDir = Path.GetDirectoryName(dte.Solution.FullName);
             string filePath = Path.Combine(solutionDir, "selectedProjects.json");
 
-            //string jsonString = JsonSerializer.Serialize(selectedProjects);
-            //File.WriteAllText(filePath, jsonString);
+            if (File.Exists(filePath))
+            {
+                string jsonString = File.ReadAllText(filePath);
+                selectedProjects = JsonSerializer.Deserialize<List<string>>(jsonString);
+            }
         }
 
+        private void SaveSelectedProjects()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            DTE2 dte = (DTE2)Package.GetGlobalService(typeof(DTE));
+            string solutionDir = Path.GetDirectoryName(dte.Solution.FullName);
+            string filePath = Path.Combine(solutionDir, "selectedProjects.json");
 
+            string jsonString = JsonSerializer.Serialize(selectedProjects);
+            File.WriteAllText(filePath, jsonString);
+        }
     }
 }
