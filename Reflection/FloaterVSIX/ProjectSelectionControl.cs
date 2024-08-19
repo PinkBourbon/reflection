@@ -11,6 +11,7 @@ namespace FloaterVSIX
 {
     public class ProjectSelectionControl : UserControl
     {
+        private DTE2 _dte;
         private EnvDTE.Projects allProjects;
         private List<string> projects;
         private List<string> selectedProjects;
@@ -45,6 +46,7 @@ namespace FloaterVSIX
             ThreadHelper.ThrowIfNotOnUIThread();
             InitializeComponent();
             allProjects = ((DTE2)Package.GetGlobalService(typeof(DTE))).Solution.Projects;
+            _dte = (DTE2)Package.GetGlobalService(typeof(DTE));
             projects = new List<string>();
             UpdateCppProjects();
             selectedProjects = new List<string>();
@@ -155,8 +157,7 @@ namespace FloaterVSIX
         private void LoadSelectedProjects()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            DTE2 dte = (DTE2)Package.GetGlobalService(typeof(DTE));
-            string solutionDir = Path.GetDirectoryName(dte.Solution.FullName);
+            string solutionDir = Path.GetDirectoryName(_dte.Solution.FullName);
             string filePath = Path.Combine(solutionDir, "selectedProjects.json");
 
             if (File.Exists(filePath))
@@ -169,8 +170,7 @@ namespace FloaterVSIX
         private void SaveSelectedProjects()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            DTE2 dte = (DTE2)Package.GetGlobalService(typeof(DTE));
-            string solutionDir = Path.GetDirectoryName(dte.Solution.FullName);
+            string solutionDir = Path.GetDirectoryName(_dte.Solution.FullName);
             string filePath = Path.Combine(solutionDir, "selectedProjects.json");
 
             string jsonString = JsonSerializer.Serialize(selectedProjects);

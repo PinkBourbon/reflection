@@ -1,11 +1,18 @@
 ﻿#include "Base.h"
 #include <iostream>
-
+#include <windows.h>
 
 using namespace flt::refl;
+using Dllfunc = std::vector<Type*> (*)();
+
 
 int main()
 {
+	HMODULE myDll = LoadLibrary(L"DLLTest.dll");
+	Dllfunc func = (Dllfunc)GetProcAddress(myDll, "GetAllTypes");
+
+	std::vector<Type*> types = func();
+
 	Type* baseType = Type::GetType<Base>();
 	Type* derivedType = Type::GetType<Derived>();
 
