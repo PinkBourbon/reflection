@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell.Design.Serialization;
 
 
 namespace FloaterVSIX
@@ -24,7 +25,9 @@ namespace FloaterVSIX
         private IVsOutputWindowPane _outputPane;
         private Guid _outputGuid;
 
-        public void Initialize(Package package)
+        private ProjectSelectionControl _projectSelectionControl;
+
+        public void Initialize(Package package, ProjectSelectionControl selectionControl)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             _dte = Package.GetGlobalService(typeof(DTE)) as DTE;
@@ -35,6 +38,8 @@ namespace FloaterVSIX
             _outputGuid = Guid.NewGuid();
             outputWindow.CreatePane(ref _outputGuid, "HeaderFileProcesser", 1, 1);
             outputWindow.GetPane(ref _outputGuid, out _outputPane);
+
+            _projectSelectionControl = selectionControl;
 
             PrintOutput("Initialized HeaderFileProcesser");
         }
@@ -63,7 +68,21 @@ namespace FloaterVSIX
         public int OnAfterSave(uint docCookie)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+            //Document activeDoc = _dte.ActiveDocument;
+            //string projectName = activeDoc.ProjectItem.ContainingProject.Name;
+
             RunningDocumentInfo docInfo = _rdt.GetDocumentInfo(docCookie);
+
+            IVsHierarchy hierarchy = docInfo.Hierarchy;
+
+            hierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ProjectName, out object projectNameObj);
+            string projectName = projectNameObj as string;
+
+            if (!_projectSelectionControl.IsCheckedProject(projectName))
+            {
+                return Microsoft.VisualStudio.VSConstants.S_OK;
+            }
+
             if (docInfo.Moniker.EndsWith(".h"))
             {
                 string docPath = docInfo.Moniker;
@@ -81,7 +100,7 @@ namespace FloaterVSIX
                 System.Diagnostics.Process process = new System.Diagnostics.Process { StartInfo = startInfo };
                 process.Start();
                 process.WaitForExit();
-                if(process.ExitCode == 0)
+                if (process.ExitCode == 0)
                 {
                     if (RefreshDoc(docInfo))
                     {

@@ -35,6 +35,7 @@ namespace FloaterVSIX
         /// FloaterVSIXPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "e52d5b02-bc20-42d7-8966-68aad0702dbd";
+        private ProjectSelectionControl control;
 
         #region Package Members
 
@@ -51,8 +52,13 @@ namespace FloaterVSIX
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
+            control = new ProjectSelectionControl();
+
+            OptionsPage optionsPage = (OptionsPage)GetDialogPage(typeof(OptionsPage));
+            optionsPage.Initialize(control);
+
             HeaderFileProcesser headerFileProcesser = new HeaderFileProcesser();
-            headerFileProcesser.Initialize(this);
+            headerFileProcesser.Initialize(this, control);
             await FloaterVSIXCommand.InitializeAsync(this);
         }
 

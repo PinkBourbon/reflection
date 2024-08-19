@@ -1,14 +1,16 @@
-﻿using System;
+﻿using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 
 namespace FloaterVSIX
 {
     public class ProjectSelectionControl : UserControl
     {
+        private EnvDTE.Projects allProjects;
         private List<string> projects;
         private List<string> selectedProjects;
 
@@ -18,7 +20,7 @@ namespace FloaterVSIX
             set
             {
                 projects = value;
-                RefreshProjectList();
+                UpdateProjectList();
             }
         }
 
@@ -36,9 +38,17 @@ namespace FloaterVSIX
 
         public ProjectSelectionControl()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             InitializeComponent();
+            allProjects = ((DTE2)Package.GetGlobalService(typeof(DTE))).Solution.Projects;
             projects = new List<string>();
+            UpdateCppProjects();
             selectedProjects = new List<string>();
+        }
+
+        public bool IsCheckedProject(string projectName)
+        {
+            return selectedProjects.Contains(projectName);
         }
 
         private void InitializeComponent()
@@ -87,10 +97,11 @@ namespace FloaterVSIX
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            RefreshProjectList();
+            UpdateCppProjects();
+            UpdateProjectList();
         }
 
-        private void RefreshProjectList()
+        private void UpdateProjectList()
         {
             checkedListBoxProjects.Items.Clear();
             checkedListBoxProjects.Items.AddRange(projects.ToArray());
@@ -119,11 +130,36 @@ namespace FloaterVSIX
                 selectedProjects.Remove(project);
             }
 
-            // 이벤트를 지연시켜 ItemCheck 이벤트가 완전히 처리된 후 발생하도록 합니다.
             BeginInvoke(new Action(() =>
             {
                 ProjectSelectionChanged?.Invoke(this, EventArgs.Empty);
             }));
         }
+
+        private void UpdateCppProjects()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            projects.Clear();
+            foreach (Project project in allProjects)
+            {
+                if (project.Kind == "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") // C++ 프로젝트 GUID
+                {
+                    projects.Add(project.Name);
+                }
+            }
+        }
+
+        private void LoadSelectedProjects()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            DTE2 dte = (DTE2)Package.GetGlobalService(typeof(DTE));
+            string solutionDir = Path.GetDirectoryName(dte.Solution.FullName);
+            string filePath = Path.Combine(solutionDir, "selectedProjects.json");
+
+            //string jsonString = JsonSerializer.Serialize(selectedProjects);
+            //File.WriteAllText(filePath, jsonString);
+        }
+
+
     }
 }

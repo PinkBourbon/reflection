@@ -89,37 +89,6 @@ namespace FloaterVSIX
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             package.ShowOptionPage(typeof(OptionsPage));
-            //OptionsPage options = (OptionsPage)package.GetDialogPage(typeof(OptionsPage));
-            //List<string> selectedProjects = options.SelectedProjects;
-
-            //// 선택된 프로젝트에 대한 작업 수행
-            //foreach (string projectName in selectedProjects)
-            //{
-            //    // 프로젝트별 작업 수행
-            //    // 예: 출력 창에 프로젝트 이름 표시
-            //    IVsOutputWindow outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-            //    if (outWindow != null)
-            //    {
-            //        Guid generalPaneGuid = VSConstants.OUTPUTWINDOW_ACTIVITYLOG_PaneGuid;
-            //        outWindow.GetPane(ref generalPaneGuid, out IVsOutputWindowPane pane);
-            //        if (pane != null)
-            //        {
-            //            pane.OutputString($"Selected project: {projectName}\n");
-            //        }
-            //    }
-            //}
-
-            //string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            //string title = "FloaterVSIXCommand";
-
-            //// Show a message box to prove we were here
-            //VsShellUtilities.ShowMessageBox(
-            //    this.package,
-            //    message,
-            //    title,
-            //    OLEMSGICON.OLEMSGICON_INFO,
-            //    OLEMSGBUTTON.OLEMSGBUTTON_OK,
-            //    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
 
 
