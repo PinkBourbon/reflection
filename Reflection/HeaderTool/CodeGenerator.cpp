@@ -9,16 +9,23 @@ CodeGenerator::CodeGenerator()
 
 bool CodeGenerator::Generate(std::filesystem::path headerPath)
 {
-	std::filesystem::path absolutePath = std::filesystem::absolute(headerPath);
-
-	HeaderAnalyzer headerAnalyzer;
-	std::vector<char> buffer;
-	if(!headerAnalyzer.Analyze(absolutePath, &buffer))
+	if (!std::filesystem::exists(headerPath))
 	{
 		return false;
 	}
 
-	std::string generatedHeaderName = absolutePath.parent_path().string() + "\\" + headerPath.stem().string() + "_generated.h";
+	std::filesystem::path absolutePath = std::filesystem::absolute(headerPath);
+	std::filesystem::path dirPath{ absolutePath.parent_path().string() + "\\generated" };
+	bool ret = create_directory(dirPath);
+
+	HeaderAnalyzer headerAnalyzer;
+	std::vector<char> buffer;
+	if (!headerAnalyzer.Analyze(absolutePath, &buffer))
+	{
+		return false;
+	}
+
+	std::string generatedHeaderName = dirPath.string() + "\\" + headerPath.stem().string() + "_generated.h";
 	std::ofstream headerFile(generatedHeaderName, std::ios::out);
 	if (!headerFile.is_open())
 	{

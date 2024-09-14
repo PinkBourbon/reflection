@@ -5,6 +5,7 @@
 class Parent
 {
 	GENERATED_REFLECT(Parent)
+
 };
 
 class ReflMember

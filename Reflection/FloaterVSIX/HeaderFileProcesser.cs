@@ -83,15 +83,28 @@ namespace FloaterVSIX
                 return Microsoft.VisualStudio.VSConstants.S_OK;
             }
 
+            Project project = null;
+            hierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out object projectObject);
+            project = projectObject as Project;
+            string projectPath = project.FullName;
+
             if (docInfo.Moniker.EndsWith(".h"))
             {
                 string docPath = docInfo.Moniker;
 
-                string exePath = "C:\\Users\\kocca61\\Desktop\\reflection\\Reflection\\x64\\Debug\\HeaderTool.exe";
+                string projectDirectory = Path.GetDirectoryName(projectPath);
+
+                Uri from = new Uri(projectDirectory);
+                Uri to = new Uri(docPath);
+
+                Uri relativeUri = from.MakeRelativeUri(to);
+                string relativeDocPath = relativeUri.ToString();
+
+                string exePath = "C:\\Users\\cgykp\\Desktop\\reflection\\Reflection\\x64\\Debug\\HeaderTool.exe";
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
                     FileName = exePath,
-                    Arguments = docPath,
+                    Arguments = docPath + " " + projectDirectory + " " + relativeDocPath,
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     CreateNoWindow = true

@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <iostream>
+#include "./generated/example_generated.h"
+
 
 namespace refl
 {

@@ -16,7 +16,7 @@ void AddIncludeGeneratedFile(std::filesystem::path headerPath)
 	headerFile.seekg(0, std::ios::end);
 	size_t fileSize = headerFile.tellg();
 	headerFile.seekg(0);
-	std::string generatedHeaderName = headerPath.stem().string() + "_generated.h";
+	std::string generatedHeaderName = "./generated/" + headerPath.stem().string() + "_generated.h";
 	std::vector<char> buffer;
 	buffer.reserve(fileSize);
 	buffer.insert(buffer.end(), includePrefix.begin(), includePrefix.end());

@@ -6,9 +6,15 @@ using namespace flt::refl;
 using Dllfunc = std::vector<Type*> (*)();
 
 
+#include "TestMacro.h"
+
 int main()
 {
-	HMODULE myDll = LoadLibrary(L"DLLTest.dll");
+	constexpr const char* str = CREATE_FILE_LINE;
+
+	constexpr int num = MYNUM;
+
+	/*HMODULE myDll = LoadLibrary(L"DLLTest.dll");
 	Dllfunc func = (Dllfunc)GetProcAddress(myDll, "GetAllTypes");
 
 	std::vector<Type*> types = func();
@@ -72,7 +78,6 @@ int main()
 			prop = derivedType->GetProperty(memberName);
 		}
 
-
 		{
 			std::cout << "input Int Value : ";
 			int input;
@@ -104,7 +109,7 @@ int main()
 			std::cout << "Member Name : " << memberName << " | Value : " << *prop->Get<int>(&derived) << std::endl;
 		}
 
-	}
+	}*/
 	
 	return 0;
 }

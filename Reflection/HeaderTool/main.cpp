@@ -109,7 +109,11 @@ std::string clangType[] =
 
 int main(int argc, char* argv[])
 {
-	AllocConsole();
+	BOOL ret = AllocConsole();
+	if (ret == 0)
+	{
+		DWORD errorCode = GetLastError();
+	}
 	HWND _consoleHwnd = GetConsoleWindow();
 	ShowWindow(_consoleHwnd, SW_SHOW);
 
@@ -123,7 +127,16 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	printf("argc num : %d", argc);
+
 	std::string path = argv[1];
+	std::string projectPath = argv[2];
+	std::string relativePath = argv[3];
+
+	std::cout << path << std::endl;
+	std::cout << projectPath << std::endl;
+	std::cout << relativePath << std::endl;
+
 	CodeGenerator generator;
 	
 	if (generator.Generate(path))

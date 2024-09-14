@@ -139,6 +139,7 @@
     <ClInclude Include="hash.h" />
     <ClInclude Include="ReflTest.generated.h" />
     <ClInclude Include="ReflTest.h" />
+    <ClInclude Include="TestMacro.h" />
     <ClInclude Include="typename.h" />
     <ClInclude Include="xxhash.h" />
     <ClInclude Include="xxhash64.h" />
