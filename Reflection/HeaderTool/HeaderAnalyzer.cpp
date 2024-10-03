@@ -17,7 +17,7 @@ unsigned int GetLineNumber(CXCursor cursor)
 // 현재 반드시 매크로가 먼저 모두 검색된다는 가정하에 작성되었습니다.
 CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data)
 {
-	HeaderAnalyzer* thisPtr = static_cast<HeaderAnalyzer*>(client_data);
+	ReflectionInfoCollector* collector = static_cast<ReflectionInfoCollector*>(client_data);
 
 	CXString name = clang_getCursorSpelling(cursor);
 	const char* name_cstr = clang_getCString(name);
@@ -28,6 +28,8 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 	const char* parentName_cstr = clang_getCString(clang_getCursorSpelling(parent));
 	const char* parentKindName = clang_getCString(clang_getCursorKindSpelling(clang_getCursorKind(parent)));
 
+	//printf("parse : %s, line : %d\n", name_cstr, line);
+
 	switch (kind)
 	{
 		case CXCursor_MacroDefinition:
@@ -36,13 +38,20 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 		{
 			if (strcmp(name_cstr, REFL_CLASS_SYMBOL) == 0)
 			{
-				thisPtr->FindClassSymbol();
+				//collector->FindClassSymbol();
 
 				CXToken* tokens;
 				unsigned int num_tokens;
 				CXTranslationUnit tu = clang_Cursor_getTranslationUnit(cursor);
 				CXSourceRange range = clang_getCursorExtent(cursor);
 				clang_tokenize(tu, range, &tokens, &num_tokens);
+
+				{
+					CXString token_spelling = clang_getTokenSpelling(tu, tokens[0]);
+					const char* token_str = clang_getCString(token_spelling);
+					printf("매크로 : %s\n", token_str);
+				}
+
 
 				if (num_tokens > 1)
 				{
@@ -90,48 +99,88 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 			}
 		}
 		break;
+		case CXCursor_Namespace:
+		{
+			std::cout << "네임스페이스 : " << name_cstr << " (라인: " << line << ")" << std::endl;
+			std::cout << "depth : " << collector->GetDepth() << std::endl;
+			collector->PushDepth(name_cstr);
+			clang_visitChildren(cursor, visitNode, client_data);
+			collector->PopDepth(name_cstr);
+		}
+		break;
 		case CXCursor_ClassDecl:
 		{
+			// 리플렉션 대상인지 확인
+			//thisPtr->GetReflectionTarget(line);
 			std::cout << "클래스: " << name_cstr << " (라인: " << line << ")" << std::endl;
+			std::cout << "depth : " << collector->GetDepth() << std::endl;
 			std::vector<std::tuple<std::string, unsigned int, bool>> bases;
-			clang_visitChildren(
-				cursor,
-				[](CXCursor c, CXCursor parent, CXClientData client_data)
-				{
-					if (clang_getCursorKind(c) == CXCursor_CXXBaseSpecifier)
-					{
-						CXType baseType = clang_getCursorType(clang_getCursorReferenced(c));
-						CXString baseTypeSpelling = clang_getTypeSpelling(baseType);
-						unsigned int baseLine = GetLineNumber(c);
-						bool isVirtual = clang_isVirtualBase(c);
-						static_cast<std::vector<std::tuple<std::string, unsigned int, bool>>*>(client_data)->push_back(
-							std::make_tuple(clang_getCString(baseTypeSpelling), baseLine, isVirtual));
-						clang_disposeString(baseTypeSpelling);
-					}
-					return CXChildVisit_Continue;
-				},
-				&bases);
-			if (!bases.empty())
-			{
-				std::cout << "  상속: ";
-				for (size_t i = 0; i < bases.size(); ++i) {
-					if (i > 0) std::cout << ", ";
-					std::cout << std::get<0>(bases[i]) << " (라인: " << std::get<1>(bases[i]) << ", "
-						<< (std::get<2>(bases[i]) ? "가상" : "일반") << ")";
-				}
-				std::cout << std::endl;
-			}
+			collector->PushDepth(name_cstr);
+			clang_visitChildren(cursor, visitNode, client_data);
+			collector->PopDepth(name_cstr);
+			std::cout << "클래스 자식 순회 끝" << std::endl;
+			//clang_visitChildren(
+			//	cursor,
+			//	[](CXCursor c, CXCursor parent, CXClientData client_data)
+			//	{
+			//		if (clang_getCursorKind(c) == CXCursor_CXXBaseSpecifier)
+			//		{
+			//			CXType baseType = clang_getCursorType(clang_getCursorReferenced(c));
+			//			CXString baseTypeSpelling = clang_getTypeSpelling(baseType);
+			//			unsigned int baseLine = GetLineNumber(c);
+			//			bool isVirtual = clang_isVirtualBase(c);
+			//			static_cast<std::vector<std::tuple<std::string, unsigned int, bool>>*>(client_data)->push_back(
+			//				std::make_tuple(clang_getCString(baseTypeSpelling), baseLine, isVirtual));
+			//			clang_disposeString(baseTypeSpelling);
+			//		}
+			//		return CXChildVisit_Continue;
+			//	},
+			//	&bases);
+			//if (!bases.empty())
+			//{
+			//	std::cout << "  상속: ";
+			//	for (size_t i = 0; i < bases.size(); ++i) {
+			//		if (i > 0) std::cout << ", ";
+			//		std::cout << std::get<0>(bases[i]) << " (라인: " << std::get<1>(bases[i]) << ", "
+			//			<< (std::get<2>(bases[i]) ? "가상" : "일반") << ")";
+			//	}
+			//	std::cout << std::endl;
+			//}
 		}
 		break;
 
 		case CXCursor_CXXMethod:
 		{
 			std::cout << "멤버 함수: " << name_cstr << " (라인: " << line << ")" << std::endl;
+			if (!collector->IsReflectionTarget(line))
+			{
+				break;
+			}
 		}
 		break;
 		case CXCursor_FieldDecl:
 		{
 			std::cout << "멤버 변수: " << name_cstr << " (라인: " << line << ")" << std::endl;
+			if (!collector->IsReflectionTarget(line))
+			{
+				break;
+			}
+		}
+		break;
+		case CXCursor_CXXBaseSpecifier:
+		{
+			CXType baseType = clang_getCursorType(clang_getCursorReferenced(cursor));
+			CXString baseTypeSpelling = clang_getTypeSpelling(baseType);
+			unsigned int baseLine = GetLineNumber(cursor);
+			bool isVirtual = clang_isVirtualBase(cursor);
+			//static_cast<std::vector<std::tuple<std::string, unsigned int, bool>>*>(client_data)->push_back(
+			//	std::make_tuple(clang_getCString(baseTypeSpelling), baseLine, isVirtual));
+
+			std::cout << "  상속: ";
+			std::cout << clang_getCString(baseTypeSpelling) << " (라인: " << baseLine << ", "
+				<< (isVirtual ? "가상" : "일반") << ")";
+			std::cout << std::endl;
+			clang_disposeString(baseTypeSpelling);
 		}
 		break;
 		default:
@@ -149,12 +198,11 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 HeaderAnalyzer::HeaderAnalyzer()
 	: _functions()
 	, _members()
-	, _isfindClassSymbol(false)
 {
 
 }
 
-bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<char>* buffer)
+bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<ReflectionData>* outReflectionDatas)
 {
 	const char* version = clang_getCString(clang_getClangVersion()); // 전체 버전 문자열
 
@@ -188,7 +236,8 @@ bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<char>
 	CXCursor cursor = clang_getTranslationUnitCursor(unit);
 
 	// AST 순회
-	clang_visitChildren(cursor, visitNode, this);
+	ReflectionInfoCollector reflGenerater;
+	clang_visitChildren(cursor, visitNode, &reflGenerater);
 
 	// 리소스 해제
 	clang_disposeTranslationUnit(unit);

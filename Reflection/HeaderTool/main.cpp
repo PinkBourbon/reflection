@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
 
 	CodeGenerator generator;
 	
-	if (generator.Generate(path))
+	if (generator.Generate(path, relativePath))
 	{
 		AddIncludeGeneratedFile(path);
 	}

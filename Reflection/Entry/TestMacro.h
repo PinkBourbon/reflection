@@ -15,5 +15,4 @@
 
 ///GENERATEDFILE 내용 만들어보자
 #undef CURRENT_FILE
-#define CURRENT_FILE "TestMacro.h"
-
+#define CURRENT_FILE "TestMacro_h"

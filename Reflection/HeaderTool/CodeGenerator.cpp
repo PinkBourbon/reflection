@@ -7,7 +7,7 @@ CodeGenerator::CodeGenerator()
 
 }
 
-bool CodeGenerator::Generate(std::filesystem::path headerPath)
+bool CodeGenerator::Generate(std::filesystem::path headerPath, std::string macroPath)
 {
 	if (!std::filesystem::exists(headerPath))
 	{
@@ -19,8 +19,9 @@ bool CodeGenerator::Generate(std::filesystem::path headerPath)
 	bool ret = create_directory(dirPath);
 
 	HeaderAnalyzer headerAnalyzer;
-	std::vector<char> buffer;
-	if (!headerAnalyzer.Analyze(absolutePath, &buffer))
+	std::vector<ReflectionData> reflectionDatas;
+
+	if (!headerAnalyzer.Analyze(absolutePath, &reflectionDatas))
 	{
 		return false;
 	}
@@ -31,7 +32,21 @@ bool CodeGenerator::Generate(std::filesystem::path headerPath)
 	{
 		return false;
 	}
-	headerFile.write(buffer.data(), buffer.size());
+
+	for (auto& c : macroPath)
+	{
+		if (c == ' ' || c == '\\' || c == '.' || c == '/')
+		{
+			c = '_';
+		}
+	}
+	macroPath = "#define CURRENT_FILE " + macroPath + "\n";
+
+
+	headerFile << macroPath;
+
+	//headerFile.write(macroPath.data(), macroPath.size());
+	//headerFile.write(generatedFileContextsBuffer.data(), generatedFileContextsBuffer.size());
 	headerFile.close();
 
 	return true;

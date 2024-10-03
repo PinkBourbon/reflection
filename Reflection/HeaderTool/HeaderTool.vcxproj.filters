@@ -27,6 +27,9 @@
     <ClCompile Include="AddIncludeGeneratedFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ReflectionInfoCollector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HeaderAnalyzer.h">
@@ -37,6 +40,9 @@
     </ClInclude>
     <ClInclude Include="AddIncludeGeneratedFile.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReflectionInfoCollector.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

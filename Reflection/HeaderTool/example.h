@@ -7,6 +7,9 @@ namespace refl
 {
 	using func = void;
 	using prop = void;
+
+	class InNameSpaceClass
+	{};
 }
 
 #define REFL_CLASS()
@@ -28,6 +31,7 @@ class Tester
 REFL_CLASS(NOT_AUTO)
 class Example : public Tester<int>, public Tester<float>, virtual public Tester<double>
 {
+	REFL_BODY
 public:
 	Example() : _value(3), _valueF(2.5f) {}
 	~Example() = default;
