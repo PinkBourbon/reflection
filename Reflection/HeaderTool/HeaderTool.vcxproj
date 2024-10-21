@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClInclude Include="AddIncludeGeneratedFile.h" />
     <ClInclude Include="CodeGenerator.h" />
+    <ClInclude Include="example.h" />
     <ClInclude Include="HeaderAnalyzer.h" />
     <ClInclude Include="ReflectionInfoCollector.h" />
   </ItemGroup>

@@ -36,7 +36,7 @@ public:
 	Example() : _value(3), _valueF(2.5f) {}
 	~Example() = default;
 
-	//REFL_FUNC
+	REFL_FUNC
 	void Print() const
 	{
 		//std::cout << "Hello, World!" << std::endl;
@@ -50,8 +50,8 @@ public:
 
 private:
 	int _value;
-	//REFL_PROP
+	REFL_PROP
 	float _valueF;
-	//REFL_PROP
+	REFL_PROP
 	Tester<int> _tester;
 };

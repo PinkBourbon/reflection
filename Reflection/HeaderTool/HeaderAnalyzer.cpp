@@ -2,7 +2,10 @@
 #include <string>
 #include <iostream>
 
+#include "clang-c/Index.h"
+
 #define REFL_CLASS_SYMBOL "REFL_CLASS"
+#define AUTO_REFL_CLASS_SYMBOL "AUTO"
 #define REFL_FUNC_SYMBOL "REFL_FUNC"
 #define REFL_PROP_SYMBOL "REFL_PROP"
 
@@ -38,6 +41,7 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 		{
 			if (strcmp(name_cstr, REFL_CLASS_SYMBOL) == 0)
 			{
+				collector->AddReflectionTarget(line);
 				//collector->FindClassSymbol();
 
 				CXToken* tokens;
@@ -73,11 +77,16 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 								CXToken token = tokens[i];
 								CXString token_spelling = clang_getTokenSpelling(tu, token);
 								const char* token_str = clang_getCString(token_spelling);
-
+								
 								if (strcmp(token_str, ")") == 0) break;
 								if (strcmp(token_str, ",") != 0)
 								{
 									printf("%s ", token_str);
+
+									if (strcmp(token_str, AUTO_REFL_CLASS_SYMBOL) == 0)
+									{
+
+									}
 								}
 
 								clang_disposeString(token_spelling);
@@ -91,21 +100,21 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 			}
 			else if (strcmp(name_cstr, REFL_FUNC_SYMBOL) == 0)
 			{
-
+				collector->AddReflectionTarget(line);
 			}
 			else if (strcmp(name_cstr, REFL_PROP_SYMBOL) == 0)
 			{
-
+				collector->AddReflectionTarget(line);
 			}
 		}
 		break;
 		case CXCursor_Namespace:
 		{
 			std::cout << "네임스페이스 : " << name_cstr << " (라인: " << line << ")" << std::endl;
-			std::cout << "depth : " << collector->GetDepth() << std::endl;
-			collector->PushDepth(name_cstr);
+			std::cout << "scope : " << collector->GetScope() << std::endl;
+			collector->EnterScope(name_cstr, line);
 			clang_visitChildren(cursor, visitNode, client_data);
-			collector->PopDepth(name_cstr);
+			collector->ExitScope(name_cstr);
 		}
 		break;
 		case CXCursor_ClassDecl:
@@ -113,12 +122,19 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 			// 리플렉션 대상인지 확인
 			//thisPtr->GetReflectionTarget(line);
 			std::cout << "클래스: " << name_cstr << " (라인: " << line << ")" << std::endl;
-			std::cout << "depth : " << collector->GetDepth() << std::endl;
+			std::cout << "scope : " << collector->GetScope() << std::endl;
 			std::vector<std::tuple<std::string, unsigned int, bool>> bases;
-			collector->PushDepth(name_cstr);
+
+			//if (!collector->IsReflectionTarget(line))
+			//{
+			//	break;
+			//}
+
+			collector->EnterScope(name_cstr, line);
 			clang_visitChildren(cursor, visitNode, client_data);
-			collector->PopDepth(name_cstr);
+			collector->ExitScope(name_cstr);
 			std::cout << "클래스 자식 순회 끝" << std::endl;
+
 			//clang_visitChildren(
 			//	cursor,
 			//	[](CXCursor c, CXCursor parent, CXClientData client_data)
@@ -152,10 +168,28 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 		case CXCursor_CXXMethod:
 		{
 			std::cout << "멤버 함수: " << name_cstr << " (라인: " << line << ")" << std::endl;
+
+			//CXType functionType = clang_getCursorType(cursor);
+			//unsigned int numArgs = clang_Cursor_getNumArguments(cursor);
+			//for (unsigned int i = 0; i < numArgs; i++) {
+			//	CXCursor argCursor = clang_Cursor_getArgument(cursor, i);
+			//	CXString argName = clang_getCursorSpelling(argCursor);
+			//	CXType argType = clang_getCursorType(argCursor);
+			//	CXString argTypeName = clang_getTypeSpelling(argType);
+
+			//	// 매개변수 이름과 타입 사용
+			//	printf("매개변수 %d: %s %s\n", i, clang_getCString(argTypeName), clang_getCString(argName));
+
+			//	clang_disposeString(argName);
+			//	clang_disposeString(argTypeName);
+			//}
+
 			if (!collector->IsReflectionTarget(line))
 			{
 				break;
 			}
+
+			collector->AddMethod(name_cstr);
 		}
 		break;
 		case CXCursor_FieldDecl:
@@ -165,6 +199,8 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 			{
 				break;
 			}
+
+			collector->AddField(name_cstr);
 		}
 		break;
 		case CXCursor_CXXBaseSpecifier:
@@ -196,8 +232,6 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 }
 
 HeaderAnalyzer::HeaderAnalyzer()
-	: _functions()
-	, _members()
 {
 
 }
@@ -245,13 +279,13 @@ bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<Refle
 
 	return true;
 }
-
-void HeaderAnalyzer::AddFunction()
-{
-	std::cout << "AddFunction" << std::endl;
-}
-
-void HeaderAnalyzer::AddMember()
-{
-	std::cout << "AddMember" << std::endl;
-}
+//
+//void HeaderAnalyzer::AddFunction()
+//{
+//	std::cout << "AddFunction" << std::endl;
+//}
+//
+//void HeaderAnalyzer::AddMember()
+//{
+//	std::cout << "AddMember" << std::endl;
+//}

@@ -1,5 +1,13 @@
 ﻿#include "ReflectionInfoCollector.h"
 
+ReflectionInfoCollector::ReflectionInfoCollector()
+	: _scope()
+	, _reflectionTargetLine()
+	, _reflectionDataMap()
+{
+
+}
+
 bool ReflectionInfoCollector::IsReflectionTarget(int line)
 {
 	if (IsAllReflectionClass())
@@ -7,7 +15,7 @@ bool ReflectionInfoCollector::IsReflectionTarget(int line)
 		return true;
 	}
 
-	if (_reflectionTargetLine.find(line) != _reflectionTargetLine.end())
+	if (_reflectionTargetLine.find(line - 1) != _reflectionTargetLine.end())
 	{
 		return true;
 	}
@@ -15,16 +23,21 @@ bool ReflectionInfoCollector::IsReflectionTarget(int line)
 	return false;
 }
 
-void ReflectionInfoCollector::PushDepth(std::string name)
+void ReflectionInfoCollector::EnterScope(std::string name, int line)
 {
-	_depth.push_back(name);
+	_scope.push_back(name);
+
+	if (IsReflectionTarget(line))
+	{
+		_reflectionDataMap[GetScope()].name = GetMacroScopeName();
+	}
 }
 
-void ReflectionInfoCollector::PopDepth(std::string name)
+void ReflectionInfoCollector::ExitScope(std::string name)
 {
-	if (_depth.back() == name)
+	if (_scope.back() == name)
 	{
-		_depth.pop_back();
+		_scope.pop_back();
 		return;
 	}
 	else
@@ -34,20 +47,75 @@ void ReflectionInfoCollector::PopDepth(std::string name)
 	}
 }
 
-std::string ReflectionInfoCollector::GetDepth()
+std::string ReflectionInfoCollector::GetScope()
 {
-	std::string depth;
-	for (auto& name : _depth)
+	std::string scope;
+	for (auto& name : _scope)
 	{
-		depth += name;
-		depth += "::";
+		scope += "::";
+		scope += name;
 	}
 
-	return depth;
+	return scope;
+}
+
+std::string ReflectionInfoCollector::GetMacroScopeName()
+{
+	std::string scope;
+	for (int i = 0; i < _scope.size() - 1; ++i)
+	{
+		scope += _scope[i];
+		scope += "__";
+	}
+	scope += _scope.back();
+
+	//for (auto& name : _scope)
+	//{
+	//	scope += "__";
+	//	scope += name;
+	//}
+
+	return scope;
+}
+
+void ReflectionInfoCollector::AddReflectionTarget(int line)
+{
+	_reflectionTargetLine.insert({line, false});
+}
+
+void ReflectionInfoCollector::SetReflectionTargetAll(int line)
+{
+	_reflectionTargetLine[line] = true;
+}
+
+void ReflectionInfoCollector::AddMethod(const std::string& name)
+{
+	std::string scope = GetScope();
+	_reflectionDataMap[scope].method.push_back(name);
+}
+
+void ReflectionInfoCollector::AddField(const std::string& name)
+{
+	std::string scope = GetScope();
+	_reflectionDataMap[scope].field.push_back(name);
 }
 
 bool ReflectionInfoCollector::IsAllReflectionClass()
 {
-	__debugbreak(); // 아직 미구현.
-	return true;
+	auto iter = _reflectionDataMap.find(GetScope());
+	if (iter == _reflectionDataMap.end())
+	{
+		return false;
+	}
+
+	return iter->second.isAllReflectionTarget;
+}
+
+ReflectionData::ReflectionData()
+	: name()
+	, method()
+	, field()
+	, isAllReflectionTarget(false)
+{
+
 }

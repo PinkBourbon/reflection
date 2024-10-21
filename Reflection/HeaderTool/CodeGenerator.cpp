@@ -18,17 +18,17 @@ bool CodeGenerator::Generate(std::filesystem::path headerPath, std::string macro
 	std::filesystem::path dirPath{ absolutePath.parent_path().string() + "\\generated" };
 	bool ret = create_directory(dirPath);
 
-	HeaderAnalyzer headerAnalyzer;
-	std::vector<ReflectionData> reflectionDatas;
-
-	if (!headerAnalyzer.Analyze(absolutePath, &reflectionDatas))
+	std::string generatedHeaderName = dirPath.string() + "\\" + headerPath.stem().string() + "_generated.h";
+	std::ofstream headerFile(generatedHeaderName, std::ios::out);
+	if (!headerFile.is_open())
 	{
 		return false;
 	}
 
-	std::string generatedHeaderName = dirPath.string() + "\\" + headerPath.stem().string() + "_generated.h";
-	std::ofstream headerFile(generatedHeaderName, std::ios::out);
-	if (!headerFile.is_open())
+	HeaderAnalyzer headerAnalyzer;
+	std::vector<ReflectionData> reflectionDatas;
+
+	if (!headerAnalyzer.Analyze(absolutePath, &reflectionDatas))
 	{
 		return false;
 	}

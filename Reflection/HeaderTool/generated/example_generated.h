@@ -1,1 +1,0 @@
-#define CURRENT_FILE HeaderTool_example_h

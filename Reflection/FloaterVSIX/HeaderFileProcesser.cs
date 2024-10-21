@@ -19,7 +19,7 @@ namespace FloaterVSIX
     internal class HeaderFileProcesser : IVsRunningDocTableEvents3
     {
         //private IVsRunningDocumentTable _rdt;
-        private RunningDocumentTable _rdt;
+        private RunningDocumentTable _rdt = null!;
         private DTE _dte;
 
         private IVsOutputWindowPane _outputPane;
