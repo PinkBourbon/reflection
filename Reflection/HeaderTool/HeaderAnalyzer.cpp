@@ -4,6 +4,7 @@
 
 #include "clang-c/Index.h"
 
+// TODO: 나중에 리플렉션 관련된 심볼들을 모아서 정리를 해야 함.
 #define REFL_CLASS_SYMBOL "REFL_CLASS"
 #define AUTO_REFL_CLASS_SYMBOL "AUTO"
 #define REFL_FUNC_SYMBOL "REFL_FUNC"
@@ -32,6 +33,10 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 	const char* parentKindName = clang_getCString(clang_getCursorKindSpelling(clang_getCursorKind(parent)));
 
 	//printf("parse : %s, line : %d\n", name_cstr, line);
+	if (line == 15)
+	{
+		int debug = 0;
+	}
 
 	switch (kind)
 	{
@@ -59,6 +64,7 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 
 				if (num_tokens > 1)
 				{
+					// TODO: 함수형 매크로일 경우 멤버들을 모두 리플렉션 처리하는지 확인이 필요.
 					CXToken second_token = tokens[1];
 					CXTokenKind token_kind = clang_getTokenKind(second_token);
 
@@ -236,7 +242,7 @@ HeaderAnalyzer::HeaderAnalyzer()
 
 }
 
-bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<ReflectionData>* outReflectionDatas)
+bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<std::string>* outReflectionCodes)
 {
 	const char* version = clang_getCString(clang_getClangVersion()); // 전체 버전 문자열
 
@@ -272,6 +278,8 @@ bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<Refle
 	// AST 순회
 	ReflectionInfoCollector reflGenerater;
 	clang_visitChildren(cursor, visitNode, &reflGenerater);
+
+	reflGenerater.GenerateReflectionCode(outReflectionCodes);
 
 	// 리소스 해제
 	clang_disposeTranslationUnit(unit);

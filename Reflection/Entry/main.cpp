@@ -1,4 +1,5 @@
-﻿#include "Base.h"
+﻿/*
+#include "Base.h"
 #include <iostream>
 #include <windows.h>
 
@@ -14,7 +15,7 @@ int main()
 
 	constexpr int num = MYNUM;
 
-	/*HMODULE myDll = LoadLibrary(L"DLLTest.dll");
+	/ *HMODULE myDll = LoadLibrary(L"DLLTest.dll");
 	Dllfunc func = (Dllfunc)GetProcAddress(myDll, "GetAllTypes");
 
 	std::vector<Type*> types = func();
@@ -109,7 +110,26 @@ int main()
 			std::cout << "Member Name : " << memberName << " | Value : " << *prop->Get<int>(&derived) << std::endl;
 		}
 
-	}*/
+	}* /
 	
+	return 0;
+}
+*/
+
+
+#include <iostream>
+#include "../HeaderTool/example.h"
+
+int main()
+{
+	Example example;
+
+	flt::refl::Type* exampleType = flt::refl::Type::GetType<Example>();
+
+	std::vector<flt::refl::Property*> baseProps = exampleType->GetProperties();
+	std::vector<flt::refl::Method*> baseMethods = exampleType->GetMethods();
+
+
+	std::cout << "Base Properties | ";
 	return 0;
 }

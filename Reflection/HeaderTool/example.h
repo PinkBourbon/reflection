@@ -2,6 +2,7 @@
 #include <iostream>
 #include "./generated/example_generated.h"
 
+#define REFL_CLASS()
 
 namespace refl
 {
@@ -12,14 +13,7 @@ namespace refl
 	{};
 }
 
-#define REFL_CLASS()
-#define REFL_CLASS(X)
-
-#define REFL_FUNC
-#define REFL_PROP
-
-#define NOT_AUTO
-#define REFL_BODY
+REFL_CLASS()
 
 template<typename T>
 class Tester

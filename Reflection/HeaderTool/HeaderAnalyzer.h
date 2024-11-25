@@ -10,5 +10,5 @@ class HeaderAnalyzer
 {
 public:
 	HeaderAnalyzer();
-	bool Analyze(std::filesystem::path headerPath, std::vector<ReflectionData>* outReflectionDatas);
+	bool Analyze(std::filesystem::path headerPath, std::vector<std::string>* outReflectionCodes);
 };

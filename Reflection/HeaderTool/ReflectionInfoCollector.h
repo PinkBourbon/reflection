@@ -8,6 +8,8 @@ struct ReflectionData
 	ReflectionData();
 
 	std::string name;
+	std::string scopedName;
+	unsigned int line;
 	std::vector<std::string> method;
 	std::vector<std::string> field;
 	bool isAllReflectionTarget;
@@ -30,6 +32,8 @@ public:
 	void SetReflectionTargetAll(int line);
 	void AddMethod(const std::string& name);
 	void AddField(const std::string& name);
+
+	void GenerateReflectionCode(std::vector<std::string>* outReflectionCodes);
 
 private:
 	bool IsAllReflectionClass();

@@ -26,7 +26,7 @@ bool CodeGenerator::Generate(std::filesystem::path headerPath, std::string macro
 	}
 
 	HeaderAnalyzer headerAnalyzer;
-	std::vector<ReflectionData> reflectionDatas;
+	std::vector<std::string> reflectionDatas;
 
 	if (!headerAnalyzer.Analyze(absolutePath, &reflectionDatas))
 	{
@@ -39,14 +39,29 @@ bool CodeGenerator::Generate(std::filesystem::path headerPath, std::string macro
 		{
 			c = '_';
 		}
+		else if (c >= 'a' && c <= 'z')
+		{
+			c -= 32;
+		}
 	}
-	macroPath = "#define CURRENT_FILE " + macroPath + "\n";
 
 
-	headerFile << macroPath;
+	std::string generatedCode = "#undef CURRENT_FILE_PATH\n";
+	generatedCode += "#define CURRENT_FILE_PATH FTL_FILE_PATH_" + macroPath + "\n\n";
+	generatedCode += "#include \"../../Reflection/Reflection.h\"\n\n";
 
-	//headerFile.write(macroPath.data(), macroPath.size());
-	//headerFile.write(generatedFileContextsBuffer.data(), generatedFileContextsBuffer.size());
+	// TODO: 리플렉션 데이터에 관련된 코드 생성 후 파일에 쓰기 구현
+	headerFile.write(generatedCode.data(), generatedCode.size());
+
+	std::string reflectionBodyMacro = "#define FTL_FILE_PATH_" + macroPath;
+	for (auto& reflectionData : reflectionDatas)
+	{
+		headerFile.write(reflectionBodyMacro.data(), reflectionBodyMacro.size());
+		headerFile.write(reflectionData.data(), reflectionData.size());
+		headerFile.write("\n", 1);
+	}
+
+
 	headerFile.close();
 
 	return true;
