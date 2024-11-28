@@ -32,13 +32,30 @@ void ReflectionInfoCollector::EnterScope(std::string name, int line)
 
 	if (IsReflectionTarget(line))
 	{
-		_reflectionDataMap[GetScope()].name = GetMacroScopeName();
-		_reflectionDataMap[GetScope()].line = line;
+		_reflectionDataMap[GetScope()].name = name;
+		_reflectionDataMap[GetScope()].scopedName = GetMacroScopeName();
+		_reflectionDataMap[GetScope()].classLine = line;
 	}
 }
 
 void ReflectionInfoCollector::ExitScope(std::string name)
 {
+	unsigned int enterLine = _reflectionDataMap[GetScope()].classLine;
+	if (IsReflectionTarget(enterLine))
+	{
+		for (auto iter = _reflBodyLines.begin(); iter != _reflBodyLines.end(); ++iter)
+		{
+			unsigned int bodyLine = *iter;
+			if (bodyLine >= enterLine)
+			{
+				_reflectionDataMap[GetScope()].bodyLine = bodyLine;
+				_reflBodyLines.erase(iter);
+				break;
+			}
+		}
+	}
+
+
 	if (_scope.back() == name)
 	{
 		_scope.pop_back();
@@ -104,13 +121,25 @@ void ReflectionInfoCollector::AddField(const std::string& name)
 	_reflectionDataMap[scope].field.push_back(name);
 }
 
+void ReflectionInfoCollector::AddReflBodyLine(unsigned int line)
+{
+	_reflBodyLines.emplace_back(line);
+}
+
 void ReflectionInfoCollector::GenerateReflectionCode(std::vector<std::string>* outReflectionCodes)
 {
 	for (auto& [scope, reflectionData] : _reflectionDataMap)
 	{
-		std::string reflectionCode = std::to_string(reflectionData.line);
+		if (reflectionData.bodyLine == 0)
+		{
+			continue;
+		}
+
+		std::string reflectionCode = std::to_string(reflectionData.bodyLine);
 		reflectionCode += "_FLT_REFL";
 		reflectionCode += "\\\n";
+		reflectionCode += "\ttemplate<typename T>\\\n";
+		reflectionCode += "\tfriend struct flt::refl::TypeBuilder;\\\n";
 		reflectionCode += "public:\\\n";
 		reflectionCode += "\tvirtual flt::refl::Type* GetType() const\\\n";
 		reflectionCode += "\t{\\\n";
@@ -120,42 +149,46 @@ void ReflectionInfoCollector::GenerateReflectionCode(std::vector<std::string>* o
 		/// InitType 함수 생성
 		reflectionCode += "\tstatic flt::refl::Type* InitType()\\\n";
 		reflectionCode += "\t{\\\n";
-		reflectionCode += "\t\tstatic flt::refl::Type s_type\\\n\\\n";
+		reflectionCode += "\t\tstatic flt::refl::Type s_type{flt::refl::TypeBuilder<";
+		reflectionCode += reflectionData.name;
+		reflectionCode += ">{\"";
+		reflectionCode += reflectionData.name;
+		reflectionCode += "\"}};\\\n\t\\\n";
 
 		for (auto& method : reflectionData.method)
 		{
-			reflectionCode += "\t\t{static Method method(&s_type, &";
+			reflectionCode += "\t\t{static flt::refl::Method method{s_type, &";
 			reflectionCode += reflectionData.name;
 			reflectionCode += "::";
 			reflectionCode += method;
 			reflectionCode += ", \"";
 			reflectionCode += method;
-			reflectionCode += "\", new Callable(&";
+			reflectionCode += "\", *(new flt::refl::Callable(&";
 			reflectionCode += reflectionData.name;
 			reflectionCode += "::";
 			reflectionCode += method;
-			reflectionCode += "));}\\\n";
+			reflectionCode += "))};}\\\n";
 		}
 
-		reflectionCode += "\\\n";
+		reflectionCode += "\t\\\n";
 
 		for (auto& field : reflectionData.field)
 		{
-			reflectionCode += "\t\t{static Property property(&s_type, ";
+			reflectionCode += "\t\t{static flt::refl::Property property(&s_type, {\"";
 			reflectionCode += field;
-			reflectionCode += ", Type::GetType<decltype(";
+			reflectionCode += "\", flt::refl::Type::GetType<decltype(";
 			reflectionCode += field;
-			reflectionCode += ")>(), new PropertyHandler(&";
+			reflectionCode += ")>(), new flt::refl::PropertyHandler(&";
 			reflectionCode += reflectionData.name;
 			reflectionCode += "::";
 			reflectionCode += field;
-			reflectionCode += "));}\\\n";
+			reflectionCode += ")});}\\\n";
 		}
 
-		reflectionCode += "\\\n";
+		reflectionCode += "\t\\\n";
 		reflectionCode += "\t\treturn &s_type;\\\n";
 		reflectionCode += "\t}\\\n";
-		reflectionCode += "\\\n";
+		reflectionCode += "\t\\\n";
 		reflectionCode += "private:\\\n";
 		reflectionCode += "\tinline static flt::refl::Type* _type = InitType();\n";
 
@@ -178,6 +211,9 @@ bool ReflectionInfoCollector::IsAllReflectionClass()
 
 ReflectionData::ReflectionData()
 	: name()
+	, scopedName()
+	, classLine(0)
+	, bodyLine(0)
 	, method()
 	, field()
 	, isAllReflectionTarget(false)

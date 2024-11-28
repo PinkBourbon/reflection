@@ -1,23 +1,25 @@
 ﻿#pragma once
 #include <iostream>
+#include "../Reflection/Reflection.h"
 #include "./generated/example_generated.h"
-
-#define REFL_CLASS()
 
 namespace refl
 {
 	using func = void;
 	using prop = void;
 
+	REFL_CLASS()
 	class InNameSpaceClass
-	{};
+	{
+		REFL_BODY
+	};
 }
 
-REFL_CLASS()
-
+//REFL_CLASS()
 template<typename T>
 class Tester
 {
+	//REFL_BODY
 };
 
 
@@ -45,7 +47,7 @@ public:
 private:
 	int _value;
 	REFL_PROP
-	float _valueF;
+		float _valueF;
 	REFL_PROP
-	Tester<int> _tester;
+		Tester<int> _tester;
 };

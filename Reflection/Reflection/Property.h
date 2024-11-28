@@ -58,7 +58,7 @@ namespace flt
 		{
 			friend class flt::refl::Type;
 		public:
-			Property(Type* owner, PropertyBuilder& builder) : 
+			Property(Type* owner, const PropertyBuilder& builder) : 
 				name(builder.name), type(builder.type), handler(builder.handler)
 			{
 				owner->AddProperty(this);

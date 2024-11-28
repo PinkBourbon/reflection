@@ -48,12 +48,12 @@ bool CodeGenerator::Generate(std::filesystem::path headerPath, std::string macro
 
 	std::string generatedCode = "#undef CURRENT_FILE_PATH\n";
 	generatedCode += "#define CURRENT_FILE_PATH FTL_FILE_PATH_" + macroPath + "\n\n";
-	generatedCode += "#include \"../../Reflection/Reflection.h\"\n\n";
+	//generatedCode += "#include \"../../Reflection/Reflection.h\"\n\n";
 
 	// TODO: 리플렉션 데이터에 관련된 코드 생성 후 파일에 쓰기 구현
 	headerFile.write(generatedCode.data(), generatedCode.size());
 
-	std::string reflectionBodyMacro = "#define FTL_FILE_PATH_" + macroPath;
+	std::string reflectionBodyMacro = "#define FTL_FILE_PATH_" + macroPath + "_";
 	for (auto& reflectionData : reflectionDatas)
 	{
 		headerFile.write(reflectionBodyMacro.data(), reflectionBodyMacro.size());

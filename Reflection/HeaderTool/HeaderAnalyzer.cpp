@@ -9,6 +9,7 @@
 #define AUTO_REFL_CLASS_SYMBOL "AUTO"
 #define REFL_FUNC_SYMBOL "REFL_FUNC"
 #define REFL_PROP_SYMBOL "REFL_PROP"
+#define REFL_BODY_SYMBOL "REFL_BODY"
 
 unsigned int GetLineNumber(CXCursor cursor)
 {
@@ -19,8 +20,19 @@ unsigned int GetLineNumber(CXCursor cursor)
 }
 
 // 현재 반드시 매크로가 먼저 모두 검색된다는 가정하에 작성되었습니다.
+// 매크로 정의 문이 다른 파일에 있을 경우 CXTranslationUnit_SingleFileParse 플래그를 적용하면
+// 매크로 확장을 제대로 찾질 못한다.
 CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data)
 {
+	CXSourceLocation location = clang_getCursorLocation(cursor);
+
+	CXFile file;
+	clang_getFileLocation(location, &file, NULL, NULL, NULL);
+	if (clang_Location_isFromMainFile(location) == 0)
+	{
+		return CXChildVisit_Continue;
+	}
+
 	ReflectionInfoCollector* collector = static_cast<ReflectionInfoCollector*>(client_data);
 
 	CXString name = clang_getCursorSpelling(cursor);
@@ -111,6 +123,10 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 			else if (strcmp(name_cstr, REFL_PROP_SYMBOL) == 0)
 			{
 				collector->AddReflectionTarget(line);
+			}
+			else if (strcmp(name_cstr, REFL_BODY_SYMBOL) == 0)
+			{
+				collector->AddReflBodyLine(line);
 			}
 		}
 		break;
@@ -229,7 +245,7 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 		{
 			int i = 0;
 		}
-			break;
+		break;
 	}
 
 	clang_disposeString(name);
@@ -249,8 +265,8 @@ bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<std::
 	CXIndex index = clang_createIndex(0, 0);
 
 	unsigned int options = CXTranslationUnit_DetailedPreprocessingRecord
-		| CXTranslationUnit_SingleFileParse
 		| CXTranslationUnit_Incomplete
+		//| CXTranslationUnit_SingleFileParse
 		| CXTranslationUnit_SkipFunctionBodies
 		| CXTranslationUnit_VisitImplicitAttributes
 		| CXTranslationUnit_VisitImplicitAttributes;
@@ -287,13 +303,3 @@ bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<std::
 
 	return true;
 }
-//
-//void HeaderAnalyzer::AddFunction()
-//{
-//	std::cout << "AddFunction" << std::endl;
-//}
-//
-//void HeaderAnalyzer::AddMember()
-//{
-//	std::cout << "AddMember" << std::endl;
-//}

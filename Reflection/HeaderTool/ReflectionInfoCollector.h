@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <string>
 #include <vector>
+#include <list>
 #include <map>
 
 struct ReflectionData
@@ -9,7 +10,8 @@ struct ReflectionData
 
 	std::string name;
 	std::string scopedName;
-	unsigned int line;
+	unsigned int classLine;
+	unsigned int bodyLine;
 	std::vector<std::string> method;
 	std::vector<std::string> field;
 	bool isAllReflectionTarget;
@@ -32,6 +34,7 @@ public:
 	void SetReflectionTargetAll(int line);
 	void AddMethod(const std::string& name);
 	void AddField(const std::string& name);
+	void AddReflBodyLine(unsigned int line);
 
 	void GenerateReflectionCode(std::vector<std::string>* outReflectionCodes);
 
@@ -42,4 +45,5 @@ private:
 	std::vector<std::string> _scope;
 	std::map<int, bool> _reflectionTargetLine;
 	std::map<std::string, ReflectionData> _reflectionDataMap;
+	std::list<unsigned int> _reflBodyLines;
 };

@@ -7,7 +7,6 @@
 \
 	template<typename T>\
 	friend struct flt::refl::TypeBuilder;\
-	friend struct flt::refl::Tester<THIS_TYPE>;\
 	\
 public:\
 	using Super = flt::refl::SuperType<THIS_TYPE>::Type;\

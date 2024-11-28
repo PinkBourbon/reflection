@@ -111,14 +111,40 @@ int main()
 		}
 
 	}* /
-	
+
 	return 0;
 }
 */
 
 
 #include <iostream>
+#include "../Reflection/Reflection.h"
 #include "../HeaderTool/example.h"
+
+
+struct Test
+{
+	static flt::refl::Type* InitType()
+	{
+		static flt::refl::Type s_type{ flt::refl::TypeBuilder<Test>{"Test"} };
+
+		{
+			static flt::refl::Method method{s_type, &Test::Func, "Func", *(new flt::refl::Callable(&Test::Func)) };
+		}
+
+		return &s_type;
+	}
+public:
+	int Func()
+	{
+		return 10;
+	}
+
+	int Func2() const
+	{
+		return 20;
+	}
+};
 
 int main()
 {
@@ -128,7 +154,22 @@ int main()
 
 	std::vector<flt::refl::Property*> baseProps = exampleType->GetProperties();
 	std::vector<flt::refl::Method*> baseMethods = exampleType->GetMethods();
+	
+	Test test;
+	const Test test2;
+	flt::refl::Callable callable(&Test::Func);
+	flt::refl::Type* type = flt::refl::Type::GetType<Test>();
+	flt::refl::Method method{ *type, &Test::Func, "Func", callable };
 
+	flt::refl::Callable callable2(&Test::Func2);
+	flt::refl::Method method2{ *type, &Test::Func2, "Func2", callable2 };
+
+	int val = callable.Invoke(&test);
+	int val2 = callable2.Invoke(&test);
+	//int val3 = callable.Invoke(&test);
+
+	//val = method.Invoke<int>(&test);
+	val2 = method2.Invoke<int>(&test2);
 
 	std::cout << "Base Properties | ";
 	return 0;
