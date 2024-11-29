@@ -165,11 +165,15 @@ int main()
 	flt::refl::Method method2{ *type, &Test::Func2, "Func2", callable2 };
 
 	int val = callable.Invoke(&test);
-	int val2 = callable2.Invoke(&test);
-	//int val3 = callable.Invoke(&test);
+	int val2 = callable2.Invoke(&test2);
 
-	//val = method.Invoke<int>(&test);
-	val2 = method2.Invoke<int>(&test2);
+	val = method.Invoke<int>(&test);
+	//val2 = method2.Invoke<int>(&test2);
+
+
+	const flt::refl::CallableBase& base = callable;
+	//auto& base2 = static_cast<const flt::refl::Callable<Test, int(Test::*)()>&>(base);
+	//auto& base3 = static_cast<const flt::refl::Callable<const Test, int(Test::*)() const >&>(base);
 
 	std::cout << "Base Properties | ";
 	return 0;
