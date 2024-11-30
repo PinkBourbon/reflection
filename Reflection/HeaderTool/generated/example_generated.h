@@ -14,7 +14,7 @@ public:\
 	{\
 		static flt::refl::Type s_type{flt::refl::TypeBuilder<Example>{"Example"}};\
 	\
-		{static flt::refl::Method method(s_type, &Example::Print, "Print", *(new flt::refl::Callable(&Example::Print)));}\
+		{static flt::refl::Method method(s_type, &Example::Print, "Print", new flt::refl::Callable(&Example::Print));}\
 	\
 		{static flt::refl::Property property(&s_type, {"_valueF", flt::refl::Type::GetType<decltype(_valueF)>(), new flt::refl::PropertyHandler(&Example::_valueF)});}\
 		{static flt::refl::Property property(&s_type, {"_tester", flt::refl::Type::GetType<decltype(_tester)>(), new flt::refl::PropertyHandler(&Example::_tester)});}\

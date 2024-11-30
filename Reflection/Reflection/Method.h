@@ -39,7 +39,7 @@ namespace flt
 
 
 		template<typename T, typename ReturnType, typename... Args>
-		class Callable<const T, ReturnType(T::*)(Args...) const> : public CallableBase
+		class Callable<T, ReturnType(T::*)(Args...) const> : public CallableBase
 		{
 			GENERATED_REFLECT(Callable)
 
@@ -63,14 +63,14 @@ namespace flt
 		Callable(ReturnType(T::*)(Args...)) -> Callable<T, ReturnType(T::*)(Args...)>;
 
 		template <typename T, typename ReturnType, typename... Args>
-		Callable(ReturnType(T::*)(Args...) const) -> Callable<const T, ReturnType(T::*)(Args...) const>;
+		Callable(ReturnType(T::*)(Args...) const) -> Callable<T, ReturnType(T::*)(Args...) const>;
 
 		class Method
 		{
 			friend class flt::refl::Type;
 		public:
 			template<typename T, typename ReturnType, typename... Args>
-			Method(Type& owner, ReturnType(T::* ptr)(Args&&...), std::string_view name, const CallableBase& callable)
+			Method(Type& owner, ReturnType(T::* ptr)(Args...), std::string_view name, const CallableBase* callable)
 				: _name(name)
 				, _callable(callable)
 				, _returnType(Type::GetType<ReturnType>())
@@ -81,7 +81,7 @@ namespace flt
 			}
 
 			template<typename T, typename ReturnType, typename... Args>
-			Method(Type& owner, ReturnType(T::* ptr)(Args&&...) const, std::string_view name, const CallableBase& callable)
+			Method(Type& owner, ReturnType(T::* ptr)(Args...) const, std::string_view name, const CallableBase* callable)
 				: _name(name)
 				, _callable(callable)
 				, _returnType(Type::GetType<ReturnType>())
@@ -100,34 +100,35 @@ namespace flt
 			template<typename ReturnType, typename T, typename... Args>
 			ReturnType Invoke(T* caller, Args&&... args) const
 			{
-				return static_cast<const Callable<T, ReturnType(T::*)(Args&&...)>&>(_callable).Invoke(caller, std::forward<Args>(args)...);
-				//return static_cast<const Callable<T>, ReturnType(std::remove_cv_t<T>::*)(Args...)>&>(_callable).Invoke(caller, std::forward<Args>(args)...);
-				/*const Type* type = _callable.GetType();
+				const Type* type = _callable.GetType();
 				if (*type == *(Type::GetType<Callable<T, ReturnType(std::remove_cv_t<T>::*)(Args...)>>()))
 				{
+					// 일반 멤버 함수 호출
+					return static_cast<const Callable<T, ReturnType(T::*)(Args...)>*>(_callable)->Invoke(caller, std::forward<Args>(args)...);
 				}
 				else
 				{
-					return static_cast<const Callable<T, ReturnType(T::*)(Args&&...) const>&>(_callable).Invoke(caller, std::forward<Args>(args)...);
-				}*/
+					// const 멤버 함수 호출
+					return static_cast<const Callable<T, ReturnType(T::*)(Args...) const>*>(_callable)->Invoke(caller, std::forward<Args>(args)...);
+				}
 			}
 
-		private:
-			std::string_view _name;
-			const CallableBase& _callable;
-			const Type* _returnType;
-			std::vector<const Type*> _paramTypes;
-		};
+			private:
+				std::string_view _name;
+				const CallableBase* _callable;
+				const Type* _returnType;
+				std::vector<const Type*> _paramTypes;
+			};
 
-		template<typename ClassType, typename ReturnType, typename... Args>
-		class MethodRegister
-		{
-		public:
-			MethodRegister(std::string_view name, ReturnType(ClassType::* ptr)(Args...))
+			template<typename ClassType, typename ReturnType, typename... Args>
+			class MethodRegister
 			{
-				static Callable<ClassType, ReturnType, Args...> callable{ ptr };
-				static Method method{ *Type::GetType<ClassType>(), ptr, name, callable };
-			}
-		};
-	} // namespace refl
-} // namespace flt
+			public:
+				MethodRegister(std::string_view name, ReturnType(ClassType::* ptr)(Args...))
+				{
+					static Callable<ClassType, ReturnType, Args...> callable{ ptr };
+					static Method method{ *Type::GetType<ClassType>(), ptr, name, callable };
+				}
+			};
+		} // namespace refl
+	} // namespace flt

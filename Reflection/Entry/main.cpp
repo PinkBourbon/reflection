@@ -129,20 +129,20 @@ struct Test
 		static flt::refl::Type s_type{ flt::refl::TypeBuilder<Test>{"Test"} };
 
 		{
-			static flt::refl::Method method{s_type, &Test::Func, "Func", *(new flt::refl::Callable(&Test::Func)) };
+			static flt::refl::Method method{s_type, &Test::Func, "Func", new flt::refl::Callable(&Test::Func) };
 		}
 
 		return &s_type;
 	}
 public:
-	int Func()
+	int Func(int a, int b)
 	{
-		return 10;
+		return 10 + a + b;
 	}
 
-	int Func2() const
+	int Func2(int a, int b) const
 	{
-		return 20;
+		return 20 + a + b;
 	}
 };
 
@@ -158,22 +158,36 @@ int main()
 	Test test;
 	const Test test2;
 	flt::refl::Callable callable(&Test::Func);
+
+	const flt::refl::CallableBase* base = &callable;
+
+
 	flt::refl::Type* type = flt::refl::Type::GetType<Test>();
-	flt::refl::Method method{ *type, &Test::Func, "Func", callable };
+	//flt::refl::Method method{ *type, &Test::Func, "Func", &callable };
 
 	flt::refl::Callable callable2(&Test::Func2);
-	flt::refl::Method method2{ *type, &Test::Func2, "Func2", callable2 };
+	//flt::refl::Method method2{ *type, &Test::Func2, "Func2", &callable2 };
 
-	int val = callable.Invoke(&test);
-	int val2 = callable2.Invoke(&test2);
+	int val = callable.Invoke(&test, 1, 2);
+	int val2 = callable2.Invoke(&test2, 1, 2);
 
-	val = method.Invoke<int>(&test);
+	//val = method.Invoke<int>(&test);
+
+	// 아래 const 멤버 함수로 호출 불가능.
 	//val2 = method2.Invoke<int>(&test2);
 
 
-	const flt::refl::CallableBase& base = callable;
+	//const flt::refl::CallableBase& base = callable;
 	//auto& base2 = static_cast<const flt::refl::Callable<Test, int(Test::*)()>&>(base);
 	//auto& base3 = static_cast<const flt::refl::Callable<const Test, int(Test::*)() const >&>(base);
+
+	//auto base4 = static_cast<const flt::refl::Callable<const Test, int(__cdecl Test::*)(void)>&>(base);
+
+
+
+	static_cast<const flt::refl::Callable<Test, int(Test::*)(int, int)>*>(base)->Invoke(&test, 1, 2);
+	// const 멤버 함수 호출
+	static_cast<const flt::refl::Callable<Test, int(Test::*)(int, int) const>*>(base)->Invoke(&test, 1, 2);
 
 	std::cout << "Base Properties | ";
 	return 0;
