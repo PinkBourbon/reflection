@@ -135,7 +135,7 @@ struct Test
 		return &s_type;
 	}
 public:
-	int Func(int a, int b)
+	int Func(int a, int& b)
 	{
 		return 10 + a + b;
 	}
@@ -163,19 +163,19 @@ int main()
 
 
 	flt::refl::Type* type = flt::refl::Type::GetType<Test>();
-	//flt::refl::Method method{ *type, &Test::Func, "Func", &callable };
+	flt::refl::Method method{ *type, &Test::Func, "Func", &callable };
 
 	flt::refl::Callable callable2(&Test::Func2);
-	//flt::refl::Method method2{ *type, &Test::Func2, "Func2", &callable2 };
+	flt::refl::Method method2{ *type, &Test::Func2, "Func2", &callable2 };
 
-	int val = callable.Invoke(&test, 1, 2);
+	int a = 2;
+	int val = callable.Invoke(&test, 1, a);
 	int val2 = callable2.Invoke(&test2, 1, 2);
 
-	//val = method.Invoke<int>(&test);
+	val = method.Invoke<int>(&test, 1, a);
 
 	// 아래 const 멤버 함수로 호출 불가능.
-	//val2 = method2.Invoke<int>(&test2);
-
+	val2 = method2.Invoke<int>(&test2, 1, 2);
 
 	//const flt::refl::CallableBase& base = callable;
 	//auto& base2 = static_cast<const flt::refl::Callable<Test, int(Test::*)()>&>(base);
@@ -183,11 +183,9 @@ int main()
 
 	//auto base4 = static_cast<const flt::refl::Callable<const Test, int(__cdecl Test::*)(void)>&>(base);
 
-
-
-	static_cast<const flt::refl::Callable<Test, int(Test::*)(int, int)>*>(base)->Invoke(&test, 1, 2);
+	static_cast<const flt::refl::Callable<Test, int(Test::*)(int, int&)>*>(base)->Invoke(&test, 1, a);
 	// const 멤버 함수 호출
-	static_cast<const flt::refl::Callable<Test, int(Test::*)(int, int) const>*>(base)->Invoke(&test, 1, 2);
+	static_cast<const flt::refl::Callable<Test, int(Test::*)(int, int&) const>*>(base)->Invoke(&test2, 1, a);
 
 	std::cout << "Base Properties | ";
 	return 0;
