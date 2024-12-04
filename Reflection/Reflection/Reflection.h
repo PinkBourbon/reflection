@@ -2,6 +2,7 @@
 #include "Type.h"
 #include "Method.h"
 #include "Property.h"
+#include "BaseRegister.h"
 //#include "TypeMacro.h"
 //#include "MethodMacro.h"
 //#include "PropertyMacro.h"

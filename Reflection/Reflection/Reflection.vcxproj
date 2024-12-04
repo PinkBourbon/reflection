@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseRegister.h" />
     <ClInclude Include="CommonMacro.h" />
     <ClInclude Include="hash.h" />
     <ClInclude Include="Method.h" />

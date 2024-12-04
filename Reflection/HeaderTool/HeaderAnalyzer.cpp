@@ -239,6 +239,13 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 				<< (isVirtual ? "가상" : "일반") << ")";
 			std::cout << std::endl;
 			clang_disposeString(baseTypeSpelling);
+
+			if (!collector->IsReflectionTarget(line))
+			{
+				break;
+			}
+
+			collector->AddBaseClass(clang_getCString(baseTypeSpelling));
 		}
 		break;
 		default:

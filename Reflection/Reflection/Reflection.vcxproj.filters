@@ -57,6 +57,9 @@
     <ClInclude Include="TypeName.h">
       <Filter>Reflection</Filter>
     </ClInclude>
+    <ClInclude Include="BaseRegister.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

@@ -12,6 +12,7 @@ struct ReflectionData
 	std::string scopedName;
 	unsigned int classLine;
 	unsigned int bodyLine;
+	std::vector<std::string> baseClass;
 	std::vector<std::string> method;
 	std::vector<std::string> field;
 	bool isAllReflectionTarget;
@@ -32,6 +33,7 @@ public:
 
 	void AddReflectionTarget(int line);
 	void SetReflectionTargetAll(int line);
+	void AddBaseClass(const std::string& scopedName);
 	void AddMethod(const std::string& name);
 	void AddField(const std::string& name);
 	void AddReflBodyLine(unsigned int line);

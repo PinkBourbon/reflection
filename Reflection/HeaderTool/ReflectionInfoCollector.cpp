@@ -109,6 +109,12 @@ void ReflectionInfoCollector::SetReflectionTargetAll(int line)
 	_reflectionTargetLine[line] = true;
 }
 
+void ReflectionInfoCollector::AddBaseClass(const std::string& scopedName)
+{
+	std::string scope = GetScope();
+	_reflectionDataMap[scope].baseClass.push_back(scopedName);
+}
+
 void ReflectionInfoCollector::AddMethod(const std::string& name)
 {
 	std::string scope = GetScope();
@@ -155,6 +161,15 @@ void ReflectionInfoCollector::GenerateReflectionCode(std::vector<std::string>* o
 		reflectionCode += reflectionData.name;
 		reflectionCode += "\"}};\\\n\t\\\n";
 
+		/// 부모 클래스 추가
+		for (auto& baseClass : reflectionData.baseClass)
+		{
+			reflectionCode += "\t\t{ static flt::refl::BaseRegister baseRegister{ &s_type,, flt::refl::Type::GetType<";
+			reflectionCode += baseClass;
+			reflectionCode += ">()};}\\\n";
+		}
+
+		/// Method 추가 코드
 		for (auto& method : reflectionData.method)
 		{
 			reflectionCode += "\t\t{static flt::refl::Method method{s_type, &";
@@ -163,18 +178,19 @@ void ReflectionInfoCollector::GenerateReflectionCode(std::vector<std::string>* o
 			reflectionCode += method;
 			reflectionCode += ", \"";
 			reflectionCode += method;
-			reflectionCode += "\", *(new flt::refl::Callable(&";
+			reflectionCode += "\", new flt::refl::Callable(&";
 			reflectionCode += reflectionData.name;
 			reflectionCode += "::";
 			reflectionCode += method;
-			reflectionCode += "))};}\\\n";
+			reflectionCode += ")};}\\\n";
 		}
 
 		reflectionCode += "\t\\\n";
 
+		/// Field 추가 코드
 		for (auto& field : reflectionData.field)
 		{
-			reflectionCode += "\t\t{static flt::refl::Property property(&s_type, {\"";
+			reflectionCode += "\t\t{static flt::refl::Property property{&s_type, {\"";
 			reflectionCode += field;
 			reflectionCode += "\", flt::refl::Type::GetType<decltype(";
 			reflectionCode += field;
@@ -182,7 +198,7 @@ void ReflectionInfoCollector::GenerateReflectionCode(std::vector<std::string>* o
 			reflectionCode += reflectionData.name;
 			reflectionCode += "::";
 			reflectionCode += field;
-			reflectionCode += ")});}\\\n";
+			reflectionCode += ")}};}\\\n";
 		}
 
 		reflectionCode += "\t\\\n";
