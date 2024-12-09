@@ -9,13 +9,13 @@ namespace refl
 	using prop = void;
 
 	REFL_CLASS()
-		class InNameSpaceClass
+	class InNameSpaceClass
 	{
 		REFL_BODY
 	};
 }
 
-//REFL_CLASS()
+REFL_CLASS()
 template<typename T>
 class Tester
 {
@@ -23,7 +23,7 @@ class Tester
 };
 
 
-//REFL_CLASS()
+REFL_CLASS()
 REFL_CLASS(NOT_AUTO)
 class Example : public Tester<int>, public Tester<float>, virtual public Tester<double>
 {
@@ -66,13 +66,13 @@ public:
 	}
 
 	REFL_FUNC
-	int GetValue() const
+		int GetValue() const
 	{
 		return _value;
 	}
 
 	REFL_FUNC
-	void SetValue(int value)
+		void SetValue(int value)
 	{
 		_value = value;
 	}

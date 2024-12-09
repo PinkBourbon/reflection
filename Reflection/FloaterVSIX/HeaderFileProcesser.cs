@@ -105,15 +105,11 @@ namespace FloaterVSIX
 
                 if (!File.Exists(exePath))
                 {
-                    /// 임시로 경로를 지정해놓음 배포가 안될 경우 이쪽으로 들어와 찾아봄.
-                    exePath = "C:\\Users\\cgykp\\Desktop\\reflection\\Reflection\\x64\\Debug\\HeaderTool.exe";
-                    if(!File.Exists(exePath))
-                    {
-                        PrintOutput("Error - HeaderTool.exe Not Found");
-                        return Microsoft.VisualStudio.VSConstants.S_OK;
-                    }
+                    ///// 임시로 경로를 지정해놓음 배포가 안될 경우 이쪽으로 들어와 찾아봄.
+                    //exePath = "C:\\Users\\cgykp\\Desktop\\reflection\\Reflection\\x64\\Debug\\HeaderTool.exe";
+                    PrintOutput("Error - HeaderTool.exe Not Found");
+                    return Microsoft.VisualStudio.VSConstants.S_OK;
                 }
-
 
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {

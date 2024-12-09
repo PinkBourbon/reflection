@@ -1,7 +1,7 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
-#include "AddIncludeGeneratedFile.h"
+//#include "AddIncludeGeneratedFile.h"
 #include "CodeGenerator.h"
 
 /// 테스트용 include
@@ -138,11 +138,8 @@ int main(int argc, char* argv[])
 	std::cout << relativePath << std::endl;
 
 	CodeGenerator generator;
-	
-	if (generator.Generate(path, relativePath))
-	{
-		AddIncludeGeneratedFile(path);
-	}
+
+	generator.Generate(path, relativePath);
 
 	return 0;
 }

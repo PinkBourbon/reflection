@@ -4,6 +4,7 @@
 #include <list>
 #include <map>
 
+
 struct ReflectionData
 {
 	ReflectionData();
@@ -22,7 +23,7 @@ struct ReflectionData
 class ReflectionInfoCollector
 {
 public:
-	ReflectionInfoCollector();
+	ReflectionInfoCollector(bool requiredInclude);
 
 	bool IsReflectionTarget(int line);
 	//const std::vector<ReflectionData> GetReflectionTarget(int classDeclLine);
@@ -48,4 +49,6 @@ private:
 	std::map<int, bool> _reflectionTargetLine;
 	std::map<std::string, ReflectionData> _reflectionDataMap;
 	std::list<unsigned int> _reflBodyLines;
+
+	unsigned int _macroBodyLineOffset;
 };

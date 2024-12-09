@@ -73,7 +73,6 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 					printf("매크로 : %s\n", token_str);
 				}
 
-
 				if (num_tokens > 1)
 				{
 					// TODO: 함수형 매크로일 경우 멤버들을 모두 리플렉션 처리하는지 확인이 필요.
@@ -186,7 +185,6 @@ CXChildVisitResult visitNode(CXCursor cursor, CXCursor parent, void* client_data
 			//}
 		}
 		break;
-
 		case CXCursor_CXXMethod:
 		{
 			std::cout << "멤버 함수: " << name_cstr << " (라인: " << line << ")" << std::endl;
@@ -299,7 +297,7 @@ bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<std::
 	CXCursor cursor = clang_getTranslationUnitCursor(unit);
 
 	// AST 순회
-	ReflectionInfoCollector reflGenerater;
+	ReflectionInfoCollector reflGenerater(_requiredInclude);
 	clang_visitChildren(cursor, visitNode, &reflGenerater);
 
 	reflGenerater.GenerateReflectionCode(outReflectionCodes);
@@ -308,5 +306,15 @@ bool HeaderAnalyzer::Analyze(std::filesystem::path headerPath, std::vector<std::
 	clang_disposeTranslationUnit(unit);
 	clang_disposeIndex(index);
 
+	if (outReflectionCodes->size() == 0)
+	{
+		return false;
+	}
+
 	return true;
+}
+
+void HeaderAnalyzer::SetIncludeRequired(bool requiredInclude)
+{
+	_requiredInclude = !requiredInclude;
 }

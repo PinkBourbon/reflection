@@ -1,14 +1,17 @@
 ﻿#include "ReflectionInfoCollector.h"
-
-
 #include <iostream>
 
-ReflectionInfoCollector::ReflectionInfoCollector()
+
+ReflectionInfoCollector::ReflectionInfoCollector(bool requiredInclude)
 	: _scope()
 	, _reflectionTargetLine()
 	, _reflectionDataMap()
+	, _macroBodyLineOffset(0)
 {
-
+	if (requiredInclude)
+	{
+		_macroBodyLineOffset = 1;
+	}
 }
 
 bool ReflectionInfoCollector::IsReflectionTarget(int line)
@@ -129,7 +132,7 @@ void ReflectionInfoCollector::AddField(const std::string& name)
 
 void ReflectionInfoCollector::AddReflBodyLine(unsigned int line)
 {
-	_reflBodyLines.emplace_back(line);
+	_reflBodyLines.emplace_back(line + _macroBodyLineOffset);
 }
 
 void ReflectionInfoCollector::GenerateReflectionCode(std::vector<std::string>* outReflectionCodes)
@@ -169,7 +172,7 @@ void ReflectionInfoCollector::GenerateReflectionCode(std::vector<std::string>* o
 			reflectionCode += ">()};}\\\n";
 		}
 
-		/// Method 추가 코드
+		/// Method 추가
 		for (auto& method : reflectionData.method)
 		{
 			reflectionCode += "\t\t{static flt::refl::Method method{s_type, &";
@@ -187,7 +190,7 @@ void ReflectionInfoCollector::GenerateReflectionCode(std::vector<std::string>* o
 
 		reflectionCode += "\t\\\n";
 
-		/// Field 추가 코드
+		/// Field 추가
 		for (auto& field : reflectionData.field)
 		{
 			reflectionCode += "\t\t{static flt::refl::Property property{&s_type, {\"";
