@@ -167,7 +167,7 @@ void ReflectionInfoCollector::GenerateReflectionCode(std::vector<std::string>* o
 		/// 부모 클래스 추가
 		for (auto& baseClass : reflectionData.baseClass)
 		{
-			reflectionCode += "\t\t{ static flt::refl::BaseRegister baseRegister{ &s_type,, flt::refl::Type::GetType<";
+			reflectionCode += "\t\t{ static flt::refl::BaseRegister baseRegister{ &s_type, flt::refl::Type::GetType<";
 			reflectionCode += baseClass;
 			reflectionCode += ">()};}\\\n";
 		}

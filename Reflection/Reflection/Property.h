@@ -14,13 +14,21 @@ namespace flt
 		};
 
 		template<typename T>
+		struct IConstPropertyHandler : PropertyHandlerBase
+		{
+			GENERATED_REFLECT(IConstPropertyHandler)
+		public:
+			virtual ~IConstPropertyHandler() {}
+		};
+
+		template<typename T>
 		struct IPropertyHandler : PropertyHandlerBase
 		{
 			GENERATED_REFLECT(IPropertyHandler)
 		public:
 			virtual ~IPropertyHandler() {}
 
-			virtual T* Get(void* owner) = 0;
+			virtual T* GetPtr(void* owner) = 0;
 			virtual void Set(void* owner, T value) = 0;
 		};
 
@@ -32,7 +40,7 @@ namespace flt
 			PropertyHandler(T TOwner::* ptr) : ptr(ptr) {}
 			virtual ~PropertyHandler() {}
 
-			T* Get(void* owner) override
+			T* GetPtr(void* owner) override
 			{
 				return &(((TOwner*)owner)->*ptr);
 			}
@@ -58,27 +66,27 @@ namespace flt
 		{
 			friend class flt::refl::Type;
 		public:
-			Property(Type* owner, const PropertyBuilder& builder) : 
+			Property(Type* owner, const PropertyBuilder& builder) :
 				name(builder.name), type(builder.type), handler(builder.handler)
 			{
 				owner->AddProperty(this);
 			}
 
 			template<typename T>
-			T* Get(void* owner)
+			T* GetPtr(void* owner)
 			{
 				if (type != Type::GetType<T>())
 				{
 					return nullptr;
 				}
 
-				return static_cast<IPropertyHandler<T>*>(handler)->Get(owner);
+				return static_cast<IPropertyHandler<T>*>(handler)->GetPtr(owner);
 			}
 
 			template<typename T>
 			bool Set(void* owner, T value)
 			{
-				if(type != Type::GetType<T>())
+				if (type != Type::GetType<T>())
 				{
 					return false;
 				}

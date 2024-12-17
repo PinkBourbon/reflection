@@ -21,7 +21,7 @@ namespace FloaterVSIX
     {
         //private IVsRunningDocumentTable _rdt;
         private RunningDocumentTable _rdt = null!;
-        private DTE _dte;
+        //private DTE _dte;
 
         private IVsOutputWindowPane _outputPane;
         private Guid _outputGuid;
@@ -31,7 +31,7 @@ namespace FloaterVSIX
         public void Initialize(Package package, ProjectSelectionControl selectionControl)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            _dte = Package.GetGlobalService(typeof(DTE)) as DTE;
+            //_dte = Package.GetGlobalService(typeof(DTE)) as DTE;
             _rdt = new RunningDocumentTable(package);
             _rdt.Advise(this);
 

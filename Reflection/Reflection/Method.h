@@ -104,6 +104,7 @@ namespace flt
 				if (*type == *(Type::GetType<Callable<T, ReturnType(std::remove_cv_t<T>::*)(Args...)>>()))
 				{
 					// 일반 멤버 함수 호출
+					// const 객체의 값을 바꾸는것은 UB지만 위 if문으로 인해 const 객체일 경우 이 구문에 들어오지 못한다.
 					return static_cast<const Callable<std::remove_cv_t<T>, ReturnType(T::*)(Args...)>*>(_callable)->Invoke(const_cast<std::remove_cv_t<T>*>(caller), std::forward<Args>(args)...);
 					//return static_cast<const Callable<T, ReturnType, Args...>*>(_callable)->Invoke(caller, std::forward<Args>(args)...);
 				}

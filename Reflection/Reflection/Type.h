@@ -98,7 +98,6 @@ namespace flt
 			}
 
 		public:
-
 			std::string_view _typeName;
 			std::string_view _rawTypeName;
 			unsigned long long _hash;

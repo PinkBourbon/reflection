@@ -122,30 +122,6 @@ int main()
 #include "../HeaderTool/example.h"
 
 
-struct Test
-{
-	static flt::refl::Type* InitType()
-	{
-		static flt::refl::Type s_type{ flt::refl::TypeBuilder<Test>{"Test"} };
-
-		{
-			static flt::refl::Method method{s_type, &Test::Func, "Func", new flt::refl::Callable(&Test::Func) };
-		}
-
-		return &s_type;
-	}
-public:
-	int Func(int a, int& b)
-	{
-		return 10 + a + b;
-	}
-
-	int Func2(int a, int b) const
-	{
-		return 20 + a + b;
-	}
-};
-
 int main()
 {
 	Example example;
@@ -155,38 +131,18 @@ int main()
 	std::vector<flt::refl::Property*> baseProps = exampleType->GetProperties();
 	std::vector<flt::refl::Method*> baseMethods = exampleType->GetMethods();
 	
-	Test test;
-	const Test test2;
-	flt::refl::Callable callable(&Test::Func);
+	flt::refl::Property* prop = exampleType->GetProperty("_valueF");
 
-	const flt::refl::CallableBase* base = &callable;
+	float* exampleValue = prop->GetPtr<float>(&example);
+	example.Print();
+	std::cout << *exampleValue << std::endl;
 
+	prop->Set(&example, 10.0f);
+	example.Print();
+	std::cout << *exampleValue << std::endl;
 
-	flt::refl::Type* type = flt::refl::Type::GetType<Test>();
-	flt::refl::Method method{ *type, &Test::Func, "Func", &callable };
-
-	flt::refl::Callable callable2(&Test::Func2);
-	flt::refl::Method method2{ *type, &Test::Func2, "Func2", &callable2 };
-
-	int a = 2;
-	int val = callable.Invoke(&test, 1, a);
-	int val2 = callable2.Invoke(&test2, 1, 2);
-
-	val = method.Invoke<int>(&test, 1, a);
-
-	// 아래 const 멤버 함수로 호출 불가능.
-	val2 = method2.Invoke<int>(&test2, 1, 2);
-
-	//const flt::refl::CallableBase& base = callable;
-	//auto& base2 = static_cast<const flt::refl::Callable<Test, int(Test::*)()>&>(base);
-	//auto& base3 = static_cast<const flt::refl::Callable<const Test, int(Test::*)() const >&>(base);
-
-	//auto base4 = static_cast<const flt::refl::Callable<const Test, int(__cdecl Test::*)(void)>&>(base);
-
-	static_cast<const flt::refl::Callable<Test, int(Test::*)(int, int&)>*>(base)->Invoke(&test, 1, a);
-	// const 멤버 함수 호출
-	static_cast<const flt::refl::Callable<Test, int(Test::*)(int, int&) const>*>(base)->Invoke(&test2, 1, a);
-
-	std::cout << "Base Properties | ";
+	//flt::refl::Property* constProp = exampleType->GetProperty("_constValue");
+	//constProp->Set(&example, 100);
+	example.Print();
 	return 0;
 }
