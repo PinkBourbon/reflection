@@ -29,6 +29,7 @@ flt::refl::Method* flt::refl::Type::GetMethod(std::string_view name) const
 			return method;
 		}
 	}
+	return nullptr;
 }
 
 std::vector<flt::refl::Method*> flt::refl::Type::GetMethods() const

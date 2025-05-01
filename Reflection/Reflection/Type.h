@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <vector>
 #include "hash.h"
+#include "TypeRegistry.h"
 
 namespace flt
 {
@@ -68,7 +69,7 @@ namespace flt
 		{
 			constexpr TypeBuilder(std::string_view typeName) :
 				_typeName(typeName),
-				_rawTypeName(GetRawTypaName()),
+				_rawTypeName(GetRawTypeName()),
 				_hash(),
 				_super(nullptr)
 			{
@@ -81,11 +82,11 @@ namespace flt
 			}
 
 		private:
-			static constexpr std::string_view GetRawTypaName() noexcept
+			static constexpr std::string_view GetRawTypeName() noexcept
 			{
 				constexpr std::string_view full_name{ __FUNCSIG__ };
 				constexpr std::string_view prefix{ "TypeBuilder<" };
-				constexpr std::string_view suffix{ ">::GetRawTypaName(" };
+				constexpr std::string_view suffix{ ">::GetRawTypeName(" };
 
 				constexpr auto left_marker_index = full_name.find(prefix);
 				static_assert(left_marker_index != std::string_view::npos);
@@ -158,6 +159,16 @@ namespace flt
 			Method* GetMethod(std::string_view name) const;
 			std::vector<Method*> GetMethods() const;
 
+			void Sirialize() const
+			{
+				// TODO : Implement serialization logic
+			}
+
+			void Deserialize() const
+			{
+				// TODO : Implement deserialization logic
+			}
+
 		private:
 			std::vector<Type*> _parents;
 			std::vector<Method*> _methods;
@@ -190,6 +201,8 @@ namespace flt
 					_properties.push_back(property);
 				}
 			}
+
+			TypeRegistry::GetInstance().RegisterType(this);
 		}
 
 	} // namespace refl
